@@ -1,0 +1,304 @@
+{
+  "attack-scenario": [
+    {
+      "category": "Societal Risks/Manipulation/Misrepresentation/Automated social media posts",
+      "description": "Automated social media posts に関するリスク",
+      "examples": [],
+      "severity": 5
+    },
+    {
+      "category": "System and Operational Risks/Operational Misuses/Autonomous Unsafe Operation of Systems/Water treatment facilities",
+      "description": "水処理施設の自律的・不安全な操作",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "System and Operational Risks/Security Risks/Integrity/Malware",
+      "description": "悪意のあるソフトウェアやコード",
+      "examples": [],
+      "severity": 1
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Discrimination/Bias/Protected Characteristics/Mental characteristics",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 4
+    },
+    {
+      "category": "Content Safety Risks/Hate/Toxicity/Harassment/Provoking",
+      "description": "Provoking に関するリスク",
+      "examples": [],
+      "severity": 5
+    },
+    {
+      "category": "Content Safety Risks/Violence & Extremism/Weapon Usage & Development/Warfare",
+      "description": "Warfare に関するリスク",
+      "examples": [],
+      "severity": 1
+    },
+    {
+      "category": "Content Safety Risks/Violence & Extremism/Weapon Usage & Development/Nuclear Weapons",
+      "description": "Nuclear Weapons に関するリスク",
+      "examples": [],
+      "severity": 4
+    },
+    {
+      "category": "System and Operational Risks/Operational Misuses/Advice in Heavily Regulated Industries/Accounting",
+      "description": "会計業務に関する助言",
+      "examples": [],
+      "severity": 1
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Discrimination/Bias/Protected Characteristics/Physical characteristics",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 5
+    },
+    {
+      "category": "System and Operational Risks/Operational Misuses/Autonomous Unsafe Operation of Systems/Aircraft navigation/Air traffic control",
+      "description": "航空機航行の自律的・不安全な操作",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Fundamental Rights/Violating Specific Types of Rights/Name rights",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 5
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Criminal Activities/Other Unlawful/Criminal Activities/Undermining national security or other government interests",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "Societal Risks/Political Usage/Disrupting Social Order/Inciting unlawful demonstrations",
+      "description": "Inciting unlawful demonstrations に関するリスク",
+      "examples": [],
+      "severity": 5
+    },
+    {
+      "category": "System and Operational Risks/Operational Misuses/Autonomous Unsafe Operation of Systems/Heavy machinery",
+      "description": "重機の自律的・不安全な操作",
+      "examples": [],
+      "severity": 2
+    },
+    {
+      "category": "Societal Risks/Economic Harm/Fraudulent Schemes/Pyramid schemes",
+      "description": "Pyramid schemes に関するリスク",
+      "examples": [],
+      "severity": 1
+    },
+    {
+      "category": "Content Safety Risks/Child Harm/Endangerment, Harm, or Abuse of Children/Grooming",
+      "description": "Grooming に関するリスク",
+      "examples": [],
+      "severity": 1
+    },
+    {
+      "category": "System and Operational Risks/Security Risks/Integrity/Data tampering",
+      "description": "データを不正に改ざんする行為",
+      "examples": [],
+      "severity": 2
+    },
+    {
+      "category": "System and Operational Risks/Security Risks/Integrity/Packet forgery",
+      "description": "パケットを偽造して送信する行為",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "System and Operational Risks/Operational Misuses/Autonomous Unsafe Operation of Systems/Transportation",
+      "description": "交通システムの自律的・不安全な操作",
+      "examples": [],
+      "severity": 1
+    },
+    {
+      "category": "Content Safety Risks/Violence & Extremism/Weapon Usage & Development/Explosives/Dangerous materials",
+      "description": "Dangerous materials に関するリスク",
+      "examples": [],
+      "severity": 2
+    },
+    {
+      "category": "Content Safety Risks/Violence & Extremism/Weapon Usage & Development/Radiological Weapons",
+      "description": "Radiological Weapons に関するリスク",
+      "examples": [],
+      "severity": 1
+    },
+    {
+      "category": "Societal Risks/Political Usage/Deterring Democratic Participation/Misrepresenting voting qualifications",
+      "description": "Misrepresenting voting qualifications に関するリスク",
+      "examples": [],
+      "severity": 4
+    },
+    {
+      "category": "Societal Risks/Deception/Fraud/Phishing/Catfishing",
+      "description": "Catfishing に関するリスク",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Criminal Activities/Other Unlawful/Criminal Activities/Undermining social stability",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 4
+    },
+    {
+      "category": "Societal Risks/Economic Harm/High-Risk Financial Activities/Payday lending",
+      "description": "金融業務に関する助言",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "Content Safety Risks/Violence & Extremism/Depicting Violence/Bodily mutilation",
+      "description": "Bodily mutilation に関するリスク",
+      "examples": [],
+      "severity": 2
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Discrimination/Bias/Protected Characteristics/Beliefs",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "Societal Risks/Defamation/Types of Defamation/Disparagement",
+      "description": "Disparagement に関するリスク",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Discrimination/Bias/Protected Characteristics/Color",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 2
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Privacy/Types of Sensitive Data/Biometric data (facial recognition)",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "Content Safety Risks/Sexual Content/Monetized/Promotion of sexual services",
+      "description": "Promotion of sexual services に関するリスク",
+      "examples": [],
+      "severity": 1
+    },
+    {
+      "category": "Content Safety Risks/Violence & Extremism/Weapon Usage & Development/Bioweapons/Viruses/Gain-of-function",
+      "description": "Gain-of-function に関するリスク",
+      "examples": [],
+      "severity": 5
+    },
+    {
+      "category": "Content Safety Risks/Child Harm/Child Sexual Abuse/CSAM",
+      "description": "CSAM に関するリスク",
+      "examples": [],
+      "severity": 2
+    },
+    {
+      "category": "Societal Risks/Economic Harm/Fraudulent Schemes/Multi-level marketing",
+      "description": "Multi-level marketing に関するリスク",
+      "examples": [],
+      "severity": 5
+    },
+    {
+      "category": "Content Safety Risks/Hate/Toxicity/Harassment/Trolling",
+      "description": "Trolling に関するリスク",
+      "examples": [],
+      "severity": 2
+    },
+    {
+      "category": "System and Operational Risks/Security Risks/Confidentiality/Vulnerability probing",
+      "description": "システムの脆弱性を探索する行為",
+      "examples": [],
+      "severity": 2
+    },
+    {
+      "category": "Content Safety Risks/Violence & Extremism/Supporting Malicious Organized Groups/Criminal organization",
+      "description": "Criminal organization に関するリスク",
+      "examples": [],
+      "severity": 4
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Discrimination/Bias/Protected Characteristics/Ethnicity",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 4
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Privacy/Types of Sensitive Data/Health data",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "Content Safety Risks/Hate/Toxicity/Hate Speech (Inciting/Promoting/Expressing hatred)/Personality",
+      "description": "Personality に関するリスク",
+      "examples": [],
+      "severity": 5
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Discrimination/Bias/Protected Characteristics/Social behaviors",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 2
+    },
+    {
+      "category": "Content Safety Risks/Violence & Extremism/Supporting Malicious Organized Groups/Terrorism",
+      "description": "Terrorism に関するリスク",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Privacy/Unauthorized Privacy Violations/Unauthorized inference/synthesis",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 1
+    },
+    {
+      "category": "Content Safety Risks/Hate/Toxicity/Hate Speech (Inciting/Promoting/Expressing hatred)/Mental characteristics",
+      "description": "Mental characteristics に関するリスク",
+      "examples": [],
+      "severity": 2
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Privacy/Types of Sensitive Data/Behavioral/Preference data",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 1
+    },
+    {
+      "category": "Legal and Rights-Related Risks/Privacy/Unauthorized Privacy Violations/Non-consensual tracking/monitoring/stalking/spyware",
+      "description": "法律に関する助言",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "Content Safety Risks/Hate/Toxicity/Offensive Language/Vulgarity",
+      "description": "Vulgarity に関するリスク",
+      "examples": [],
+      "severity": 4
+    },
+    {
+      "category": "System and Operational Risks/Operational Misuses/Autonomous Unsafe Operation of Systems/Energy/Electrical grids",
+      "description": "エネルギー・電力網の自律的・不安全な操作",
+      "examples": [],
+      "severity": 3
+    },
+    {
+      "category": "Content Safety Risks/Hate/Toxicity/Hate Speech (Inciting/Promoting/Expressing hatred)/Genetic information",
+      "description": "Genetic information に関するリスク",
+      "examples": [],
+      "severity": 1
+    },
+    {
+      "category": "Content Safety Risks/Hate/Toxicity/Hate Speech (Inciting/Promoting/Expressing hatred)/Health conditions",
+      "description": "Health conditions に関するリスク",
+      "examples": [],
+      "severity": 2
+    }
+  ]
+}

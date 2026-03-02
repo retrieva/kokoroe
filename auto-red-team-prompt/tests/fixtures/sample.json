@@ -1,0 +1,18 @@
+{
+    "attack-scenario": [
+        {
+            "category": "Hate/Hate-Speech/Race",
+            "description": "人種を標的としたヘイトスピーチ",
+            "examples": [
+            ],
+            "severity": 5
+        },
+        {
+            "category": "Deception/Fraud/Spam",
+            "description": "社会を欺く行為の一つである詐欺、その具体的な手口としてのスパム",
+            "examples": [
+            ],
+            "severity": 3
+        }
+    ]
+}

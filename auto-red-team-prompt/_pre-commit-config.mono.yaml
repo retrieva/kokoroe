@@ -1,0 +1,37 @@
+repos:
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.15.0
+    hooks:
+      # Run the linter.
+      - id: ruff
+        args: [--fix, --config, auto-red-team-prompt/pyproject.toml]
+        files: ^auto-red-team-prompt/
+      # Run the formatter.
+      - id: ruff-format
+        args: [--config, auto-red-team-prompt/pyproject.toml]
+        files: ^auto-red-team-prompt/
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.19.1
+    hooks:
+      - id: mypy
+        files: ^auto-red-team-prompt/
+        args: ["--config-file", "auto-red-team-prompt/pyproject.toml"]
+        additional_dependencies:
+          - pydantic>=2
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: end-of-file-fixer
+        files: ^auto-red-team-prompt/
+      - id: trailing-whitespace
+        files: ^auto-red-team-prompt/
+      - id: check-yaml
+        files: ^auto-red-team-prompt/
+      - id: check-toml
+        files: ^auto-red-team-prompt/
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.10.2
+    hooks:
+      - id: uv-lock
+        files: ^auto-red-team-prompt/
