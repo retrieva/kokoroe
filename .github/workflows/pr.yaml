@@ -25,8 +25,10 @@ jobs:
         with:
           enable-cache: true
       - name: Install dependencies
+        working-directory: auto-red-team-prompt
         run: uv sync --locked --all-extras
       - name: Run tests
+        working-directory: auto-red-team-prompt
         run: uv run pytest
 
   python-lint:
@@ -45,8 +47,10 @@ jobs:
         with:
           enable-cache: true
       - name: Install dependencies
+        working-directory: auto-red-team-prompt
         run: uv sync --locked --all-extras
       - name: Run lint
+        working-directory: auto-red-team-prompt
         run: uv run pre-commit run --all-files
 
   scan_ruby:
