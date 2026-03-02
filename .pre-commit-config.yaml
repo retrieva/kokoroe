@@ -30,8 +30,11 @@ repos:
         files: ^auto-red-team-prompt/
       - id: check-toml
         files: ^auto-red-team-prompt/
-  - repo: https://github.com/astral-sh/uv-pre-commit
-    rev: 0.10.2
+  - repo: local
     hooks:
       - id: uv-lock
-        files: ^auto-red-team-prompt/
+        name: uv lock (at auto-red-team-prompt)
+        language: system
+        entry: bash -lc 'cd auto-red-team-prompt && uv lock --check'
+        pass_filenames: false
+        files: ^auto-red-team-prompt/(pyproject\.toml|uv\.lock)$
