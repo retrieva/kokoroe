@@ -50,7 +50,7 @@ jobs:
         working-directory: auto-red-team-prompt
         run: uv sync --locked --all-extras
       - name: Run lint
-        run: uv run pre-commit run
+        run: uv tool run pre-commit run --all-files
 
   scan_ruby:
     runs-on: ubuntu-latest
