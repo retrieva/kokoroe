@@ -1,0 +1,66 @@
+<div id="attack_execution_status">
+  <h5>
+    <span class="badge bg-<%= execution.completed? ? 'success' : execution.failed? ? 'danger' : execution.running? ? 'primary' : 'secondary' %>">
+      <%= execution.status_i18n %>
+    </span>
+  </h5>
+
+  <% if execution.completed? %>
+    <p class="text-muted mt-2">攻撃が完了しました。</p>
+  <% elsif execution.running? %>
+    <%
+      initial_percentage = case execution.current_step
+      when 1 then 0
+      when 2 then 50
+      when 3 then 80
+      else 0
+      end
+    %>
+    <%= render "shared/progress_bar", dom_id: "progress_bar_#{execution.id}", percentage: initial_percentage, status: nil %>
+
+    <% if execution.started_at %>
+      <%
+        step_icon = ->(step_num, is_completed) do
+          if is_completed
+            "✅"
+          elsif execution.failed? && execution.current_step == step_num
+            "❌"
+          elsif execution.running? && execution.current_step == step_num
+            "🔄"
+          else
+            "⏳"
+          end
+        end
+
+        step_status = {
+          1 => "攻撃の実行",
+          2 => "結果の評価",
+          3 => "サマリの作成"
+        }
+      %>
+      <ul class="list-unstyled">
+        <li>
+          <%= step_icon.call(1, execution.current_step.to_i > 1 || execution.completed?) %>
+          ステップ1: 攻撃の実行
+          <% if execution.running? && execution.current_step == 1 %>
+            <span class="text-muted fst-italic">(実行中...)</span>
+          <% end %>
+        </li>
+        <li>
+          <%= step_icon.call(2, execution.current_step.to_i > 2 || execution.completed?) %>
+          ステップ2: 結果の評価
+          <% if execution.running? && execution.current_step == 2 %>
+            <span class="text-muted fst-italic">(実行中...)</span>
+          <% end %>
+        </li>
+        <li>
+          <%= step_icon.call(3, execution.current_step.to_i > 3 || execution.completed?) %>
+          ステップ3: サマリの作成
+          <% if execution.running? && execution.current_step == 3 %>
+            <span class="text-muted fst-italic">(実行中...)</span>
+          <% end %>
+        </li>
+      </ul>
+    <% end %>
+  <% end %>
+</div>

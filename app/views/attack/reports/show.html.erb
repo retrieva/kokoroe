@@ -1,0 +1,29 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="me-3"><%= Attack::Execution.model_name.human %><%= @execution.id %>「<%= @execution.name.presence || "-" %>」</h2>
+    <div class="flex-shrink-0 d-flex flex-nowrap gap-2">
+      <%= link_to "削除", attack_report_path(@execution, redirect_to: "parent"),
+          data: { turbo_method: :delete, turbo_confirm: "攻撃結果レポート「#{@execution.name}」を削除します。よろしいですか？" },
+          class: "btn btn-outline-danger" %>
+      <%= link_to "一覧", attack_reports_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <%= turbo_stream_from "attack_report_#{@execution.id}" %>
+  <div id="report_improvement_cycle_<%= @execution.id %>">
+    <%= render "improvement_cycle", execution: @execution, initial_policies: @initial_policies %>
+  </div>
+
+  <div id="report_content_<%= @execution.id %>">
+    <% if @execution.completed? %>
+      <%= render "data_content", execution: @execution, initial_policies: @initial_policies %>
+    <% else %>
+      <%= render "history_content", execution: @execution %>
+    <% end %>
+  </div>
+</div>
+
+<a href="#" class="btn btn-secondary back-to-top" title="トップに戻る"
+   data-controller="back-to-top" data-action="click->back-to-top#scrollToTop">
+  ↑
+</a>

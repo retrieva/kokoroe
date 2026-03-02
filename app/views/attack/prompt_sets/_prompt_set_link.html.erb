@@ -1,0 +1,5 @@
+<% if prompt_set.completed? %>
+  <%= link_to prompt_set.name, attack_prompt_set_path(prompt_set) %>
+<% else %>
+  <span class="text-muted">-</span>
+<% end %>

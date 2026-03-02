@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ジョブ実行中...</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+  <style>
+    .progress-container {
+      max-width: 600px;
+      margin: 50px auto;
+      text-align: center;
+    }
+    .job-info {
+      background: #f8f9fa;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 30px;
+    }
+    .progress {
+      height: 30px;
+      margin: 20px 0;
+    }
+    .progress-bar {
+      transition: width 0.5s ease;
+      font-weight: bold;
+    }
+    .status-text {
+      font-size: 18px;
+      margin: 15px 0;
+    }
+    .time-remaining {
+      font-size: 14px;
+      color: #6c757d;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="progress-container">
+      <div class="job-info">
+        <h2>🔄 ジョブ実行中</h2>
+        <p>処理が完了するまでお待ちください...</p>
+      </div>
+
+      <div class="progress">
+        <div id="progress-bar" class="progress-bar bg-primary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          0%
+        </div>
+      </div>
+
+      <div id="status-text" class="status-text">
+        初期化中...
+      </div>
+
+      <div class="mt-4">
+        <small class="text-muted">
+          このページは自動的にリダイレクトされます。
+        </small>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    console.log('Script started');
+
+    // Turbo対応の初期化関数
+    function initializeJob() {
+      console.log('Initializing job...');
+
+      // URLパラメータを取得する関数
+      function getQueryParam(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+      }
+
+      // デフォルト値
+      const defaultSeconds = 10;
+      const defaultUrl = '/';
+
+      // パラメータを取得
+      const totalSeconds = parseInt(getQueryParam('seconds')) || defaultSeconds;
+      const redirectUrl = getQueryParam('url') || defaultUrl;
+
+      console.log('Parameters:', { totalSeconds, redirectUrl });
+
+      // 要素を取得
+      const progressBar = document.getElementById('progress-bar');
+      const statusText = document.getElementById('status-text');
+
+      console.log('Elements:', { progressBar, statusText });
+
+      // 要素が見つからない場合はエラー
+      if (!progressBar || !statusText) {
+        console.error('Required elements not found!');
+        return;
+      }
+
+      // 既存のインターバルがあればクリア
+      if (window.jobInterval) {
+        clearInterval(window.jobInterval);
+        console.log('Cleared existing interval');
+      }
+
+      let currentSecond = 0;
+      const startTime = Date.now();
+
+      function updateProgress() {
+        const elapsed = (Date.now() - startTime) / 1000;
+        const progress = Math.min((elapsed / totalSeconds) * 100, 100);
+        const remaining = Math.max(totalSeconds - elapsed, 0);
+
+        // プログレスバーを更新
+        progressBar.style.width = progress + '%';
+        progressBar.setAttribute('aria-valuenow', progress);
+        progressBar.textContent = Math.round(progress) + '%';
+
+        // ステータステキストを更新
+        if (progress < 25) {
+          statusText.textContent = '処理を開始しています...';
+        } else if (progress < 50) {
+          statusText.textContent = '処理中です...';
+        } else if (progress < 75) {
+          statusText.textContent = '処理が進行中です...';
+        } else if (progress < 95) {
+          statusText.textContent = '処理がほぼ完了しました...';
+        } else if (progress < 100) {
+          statusText.textContent = '最終処理中です...';
+        } else {
+          statusText.textContent = '処理が完了しました！リダイレクトしています...';
+        }
+
+        // 完了チェック
+        if (elapsed >= totalSeconds) {
+          console.log('Job completed, redirecting to:', redirectUrl);
+          clearInterval(window.jobInterval);
+          window.jobInterval = null;
+          
+          // プログレスバーを完了状態に
+          progressBar.style.width = '100%';
+          progressBar.setAttribute('aria-valuenow', 100);
+          progressBar.textContent = '100%';
+          progressBar.classList.remove('bg-primary');
+          progressBar.classList.add('bg-success');
+          
+          statusText.textContent = '✅ 処理完了！リダイレクトしています...';
+          
+          // 少し遅延してからリダイレクト
+          setTimeout(() => {
+            console.log('Redirecting now...');
+            window.location.href = redirectUrl;
+          }, 500);
+        }
+      }
+
+      // 初期表示
+      updateProgress();
+
+      // 100ms間隔で更新（滑らかな進捗表示のため）
+      window.jobInterval = setInterval(updateProgress, 100);
+      console.log('Interval started:', window.jobInterval);
+    }
+
+    // 通常のDOMContentLoadedイベント
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initializeJob);
+    } else {
+      // すでにDOMが読み込まれている場合（Turboナビゲーション後など）
+      initializeJob();
+    }
+
+    // Turbo専用イベント（存在する場合）
+    if (typeof Turbo !== 'undefined') {
+      document.addEventListener('turbo:load', initializeJob);
+      
+      // ページ離脱時のクリーンアップ
+      document.addEventListener('turbo:before-visit', function() {
+        if (window.jobInterval) {
+          clearInterval(window.jobInterval);
+          window.jobInterval = null;
+          console.log('Cleaned up interval before navigation');
+        }
+      });
+    }
+  </script>
+</body>
+</html>

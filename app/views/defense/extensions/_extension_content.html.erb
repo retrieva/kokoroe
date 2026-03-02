@@ -1,0 +1,85 @@
+<div class="row mb-3">
+  <div class="col-md-3">
+    <strong>ステータス:</strong>
+  </div>
+  <div class="col-md-9">
+    <span class="badge bg-<%= extension.completed? ? 'success' : extension.failed? ? 'danger' : extension.running? ? 'primary' : 'secondary' %>">
+      <%= extension.status_i18n %>
+    </span>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-3">
+    <strong>元の防衛方針:</strong>
+  </div>
+  <div class="col-md-9">
+    <%= link_to "方針 ##{extension.source_policy_id}", defense_policy_path(extension.source_policy) %>
+    (<%= extension.source_policy.contents.size %>件の内容)
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-3">
+    <strong>参照した攻撃:</strong>
+  </div>
+  <div class="col-md-9">
+    <%= link_to "攻撃 ##{extension.attack_execution_id}", attack_report_path(extension.attack_execution) %>
+    <% if extension.attack_execution.prompt_set %>
+      - <%= extension.attack_execution.prompt_set.name %>
+    <% end %>
+  </div>
+</div>
+
+<% if extension.completed? && extension.contents.present? %>
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <strong>拡張後の内容数:</strong>
+    </div>
+    <div class="col-md-9">
+      <%= extension.contents.size %>件
+    </div>
+  </div>
+<% end %>
+
+<div class="row mb-3">
+  <div class="col-md-3">
+    <strong>作成日時:</strong>
+  </div>
+  <div class="col-md-9">
+    <%= l extension.created_at %>
+  </div>
+</div>
+
+<% if extension.started_at %>
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <strong>開始日時:</strong>
+    </div>
+    <div class="col-md-9">
+      <%= l extension.started_at %>
+    </div>
+  </div>
+<% end %>
+
+<% if extension.completed_at %>
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <strong>完了日時:</strong>
+    </div>
+    <div class="col-md-9">
+      <%= l extension.completed_at %>
+    </div>
+  </div>
+<% end %>
+
+<% if extension.failed_at %>
+  <div class="row mb-3">
+    <div class="col-md-3">
+      <strong>失敗日時:</strong>
+    </div>
+    <div class="col-md-9">
+      <%= l extension.failed_at %>
+    </div>
+  </div>
+<% end %>

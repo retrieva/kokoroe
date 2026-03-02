@@ -1,0 +1,3 @@
+web: bin/rails server -p 3000
+job: bin/jobs start
+css: bin/rails dartsass:watch

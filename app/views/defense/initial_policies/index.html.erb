@@ -1,0 +1,55 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>初期防衛方針一覧</h2>
+    <div>
+      <%= link_to "新規作成", new_defense_initial_policy_path, class: "btn btn-primary" %>
+      <%= link_to "HOME", root_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <% if @policies.any? %>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>名前</th>
+            <th>内容</th>
+            <th>作成日時</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @policies.each do |policy| %>
+            <tr>
+              <td><%= link_to policy.name.presence || "方針 ##{policy.id}", defense_initial_policy_path(policy) %></td>
+              <td>
+                <% if policy.contents.any? %>
+                  <%= truncate(policy.contents.first, length: 30) %>(全<%= policy.contents.size %>件)
+                <% else %>
+                  -
+                <% end %>
+              </td>
+              <td><%= l policy.created_at, format: :compact %><%= new_badge(policy.updated_at) %></td>
+              <td>
+                <%= link_to "編集", edit_defense_initial_policy_path(policy), class: "btn btn-sm btn-outline-secondary" %>
+                <% if policy.deletable? %>
+                  <%= link_to "削除", defense_initial_policy_path(policy),
+                      data: { turbo_method: :delete, turbo_confirm: "初期防衛方針「#{policy.name}」を削除します。よろしいですか？" },
+                      class: "btn btn-sm btn-outline-danger" %>
+                <% else %>
+                  <button type="button" class="btn btn-sm btn-outline-danger"
+                      onclick="alert('<%= policy.undeletable_reason %>')">削除</button>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      初期防衛方針がまだ登録されていません。
+      <%= link_to "新規作成", new_defense_initial_policy_path, class: "alert-link" %>から始めましょう。
+    </div>
+  <% end %>
+</div>

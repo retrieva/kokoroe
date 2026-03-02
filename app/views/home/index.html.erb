@@ -1,0 +1,227 @@
+<div class="d-flex justify-content-center align-items-center mb-5">
+  <img src="/favicon.svg" alt="KOKOROE" style="width: 64px; height: 64px;" class="me-3">
+  <p class="lead mb-0"><strong>KOKOROE</strong>は、LLMに対して自動で脆弱性診断を行い（Red-Teaming）、<br/>その結果から防御改善用の学習データを自動生成します（Blue-Teaming）。</p>
+</div>
+
+<%# パート1: 攻撃フロー %>
+<div class="d-flex mb-2">
+  <%# 左: Red-Teaming ラベルと縦ライン (10%) %>
+  <div class="d-flex flex-column align-items-center" style="width: 10%;">
+    <div class="text-danger fw-bold text-center">Red-Teaming</div>
+    <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
+      <div class="text-danger">↑</div>
+      <div class="border-start border-danger border-2" style="height: 100%; min-height: 100px;"></div>
+      <div class="text-danger">↓</div>
+    </div>
+  </div>
+
+  <%# 攻撃シナリオ (40%) %>
+  <div class="d-flex align-items-start" style="width: 40%; padding-left: 15%;">
+    <div class="py-2 pe-2 position-relative">
+      <%= link_to "攻撃シナリオ", attack_scenarios_path, class: "fw-bold text-danger text-decoration-underline" %>
+      <% if @recent_scenarios.any? %>
+        <ul class="mb-0 small ps-3 position-absolute text-start" style="left: 0; top: calc(100% + 0.5rem); white-space: nowrap;">
+          <% @recent_scenarios.each do |scenario| %>
+            <li>
+              <%= link_to truncate(scenario.name, length: 20), attack_scenario_path(scenario), class: "text-danger" %>
+              <%= new_badge(scenario.updated_at) %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+    <div class="d-flex align-items-center text-danger flex-grow-1 ms-4" style="margin-top: 12px;">
+      <div style="border-top: 2px solid currentColor; flex-grow: 1;"></div>
+      <div style="margin-left: -5px;">→</div>
+    </div>
+  </div>
+
+  <%# プロンプト集の縦フロー (40%) %>
+  <div style="width: 40%;">
+    <div class="d-flex flex-column align-items-center">
+      <%# 機能: プロンプト集自動生成 %>
+      <div class="border border-secondary rounded-pill px-3 py-1 bg-light d-flex align-items-center">
+        <span class="text-muted me-2">機能①</span>
+        <small class="text-muted text-start">簡単なシナリオ記述から、<br>具体的な攻撃用プロンプトを生成</small>
+      </div>
+      <div class="text-danger my-1 d-flex flex-column align-items-center">
+        <div style="border-left: 2px solid currentColor; height: 15px;"></div>
+        <div style="margin-top: -5px;">↓</div>
+      </div>
+
+      <%# データ: プロンプト集 %>
+      <div class="px-3 text-center position-relative">
+        <%= link_to "プロンプト集", attack_prompt_sets_path, class: "fw-bold text-danger text-decoration-underline" %>
+        <% if @recent_prompt_sets.any? %>
+          <ul class="mb-0 small ps-3 position-absolute text-start" style="left: calc(100% + 1rem); top: 50%; transform: translateY(calc(-50% - 0.8em)); white-space: nowrap;">
+            <% @recent_prompt_sets.each do |prompt_set| %>
+              <li>
+                <%= link_to truncate(prompt_set.name, length: 20), attack_prompt_set_path(prompt_set), class: "text-danger" %>
+                <%= new_badge(prompt_set.updated_at) %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+      <div class="text-danger my-1 d-flex flex-column align-items-center">
+        <div style="border-left: 2px solid currentColor; height: 15px;"></div>
+        <div style="margin-top: -5px;">↓</div>
+      </div>
+
+      <%# 機能: 対象LLMを攻撃・診断 %>
+      <div class="border border-secondary rounded-pill px-3 py-1 bg-light d-flex align-items-center">
+        <span class="text-muted me-2">機能②</span>
+        <small class="text-muted text-start">対象LLMを攻撃・診断</small>
+      </div>
+      <div class="text-danger my-1 d-flex flex-column align-items-center">
+        <div style="border-left: 2px solid currentColor; height: 15px;"></div>
+        <div style="margin-top: -5px;">↓</div>
+      </div>
+
+      <%# データ: 攻撃結果レポート %>
+      <div class="px-3 text-center position-relative">
+        <%= link_to "攻撃結果レポート", attack_reports_path, class: "fw-bold text-danger text-decoration-underline" %>
+        <% if @recent_executions.any? %>
+          <ul class="mb-0 small ps-3 position-absolute text-start" style="left: calc(100% + 1rem); top: 50%; transform: translateY(calc(-50% - 0.8em)); white-space: nowrap;">
+            <% @recent_executions.each do |execution| %>
+              <li>
+                <%= link_to truncate("攻撃 ##{execution.id}", length: 20), attack_report_path(execution), class: "text-danger" %>
+                <%= new_badge(execution.updated_at) %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <%# 右の余白 (10%) %>
+  <div style="width: 10%;"></div>
+</div>
+
+<%# パート1からパート2への接続矢印 %>
+<div class="d-flex mb-1">
+  <div style="width: 10%;"></div>
+  <div style="width: 40%;"></div>
+  <div class="text-primary d-flex flex-column align-items-center" style="width: 40%;">
+    <div style="border-left: 2px solid currentColor; height: 15px;"></div>
+    <div style="margin-top: -5px;">↓</div>
+  </div>
+  <div style="width: 10%;"></div>
+</div>
+
+<%# パート2: 防衛フロー（ビジョンも含む） %>
+<div class="d-flex mb-2">
+  <%# 左: Blue-Teaming ラベルと縦ライン (10%) %>
+  <div class="d-flex flex-column align-items-center" style="width: 10%;">
+    <div class="text-primary fw-bold text-center">Blue-Teaming</div>
+    <div class="flex-grow-1 d-flex flex-column align-items-center justify-content-center">
+      <div class="text-primary">↑</div>
+      <div class="border-start border-primary border-2" style="height: 100%; min-height: 200px;"></div>
+      <div class="text-primary">↓</div>
+    </div>
+  </div>
+
+  <%# 初期防衛方針 (40%) %>
+  <div class="d-flex align-items-start" style="width: 40%; padding-left: 15%;">
+    <div class="py-2 pe-2 position-relative">
+      <%= link_to "初期防衛方針", defense_initial_policies_path, class: "fw-bold text-primary text-decoration-underline" %>
+      <% if @recent_initial_policies.any? %>
+        <ul class="mb-0 small ps-3 position-absolute text-start" style="left: 0; top: calc(100% + 0.5rem); white-space: nowrap;">
+          <% @recent_initial_policies.each do |policy| %>
+            <li>
+              <%= link_to truncate(policy.name.presence || "方針 ##{policy.id}", length: 20), defense_initial_policy_path(policy), class: "text-primary" %>
+              <%= new_badge(policy.updated_at) %>
+            </li>
+          <% end %>
+        </ul>
+      <% end %>
+    </div>
+    <div class="d-flex align-items-center text-primary flex-grow-1 ms-4" style="margin-top: 12px;">
+      <div style="border-top: 2px solid currentColor; flex-grow: 1;"></div>
+      <div style="margin-left: -5px;">→</div>
+    </div>
+  </div>
+
+  <%# 防衛方針の縦フロー (40%) %>
+  <div style="width: 40%;">
+    <div class="d-flex flex-column align-items-center">
+      <%# 機能: 防衛方針の自動拡張 %>
+      <div class="border border-secondary rounded-pill px-3 py-1 bg-light d-flex align-items-center">
+        <span class="text-muted me-2">機能③</span>
+        <small class="text-muted text-start">一般的な防衛方針の記述を、<br>攻撃結果を参考にして拡張</small>
+      </div>
+      <div class="text-primary my-1 d-flex flex-column align-items-center">
+        <div style="border-left: 2px solid currentColor; height: 15px;"></div>
+        <div style="margin-top: -5px;">↓</div>
+      </div>
+
+      <%# データ: 防衛方針 %>
+      <div class="px-3 text-center position-relative">
+        <%= link_to "防衛方針", defense_policies_path, class: "fw-bold text-primary text-decoration-underline" %>
+        <% if @recent_policies.any? %>
+          <ul class="mb-0 small ps-3 position-absolute text-start" style="left: calc(100% + 1rem); top: 50%; transform: translateY(calc(-50% - 0.8em)); white-space: nowrap;">
+            <% @recent_policies.each do |policy| %>
+              <li>
+                <%= link_to truncate("方針 ##{policy.id}", length: 20), defense_policy_path(policy), class: "text-primary" %>
+                <%= new_badge(policy.updated_at) %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+      <div class="text-primary my-1 d-flex flex-column align-items-center">
+        <div style="border-left: 2px solid currentColor; height: 15px;"></div>
+        <div style="margin-top: -5px;">↓</div>
+      </div>
+
+      <%# 機能: LLMの学習データ生成 %>
+      <div class="border border-secondary rounded-pill px-3 py-1 bg-light d-flex align-items-center">
+        <span class="text-muted me-2">機能④</span>
+        <small class="text-muted text-start">拡張された防衛方針をもとに、<br>対象LLMを改善するための学習データを生成</small>
+      </div>
+      <div class="text-primary my-1 d-flex flex-column align-items-center">
+        <div style="border-left: 2px solid currentColor; height: 15px;"></div>
+        <div style="margin-top: -5px;">↓</div>
+      </div>
+
+      <%# データ: 学習データ %>
+      <div class="px-3 text-center position-relative">
+        <%= link_to "学習データ", defense_training_datasets_path, class: "fw-bold text-primary text-decoration-underline" %>
+        <% if @recent_training_datasets.any? %>
+          <ul class="mb-0 small ps-3 position-absolute text-start" style="left: calc(100% + 1rem); top: 50%; transform: translateY(calc(-50% - 0.8em)); white-space: nowrap;">
+            <% @recent_training_datasets.each do |dataset| %>
+              <li>
+                <%= link_to truncate("学習データ ##{dataset.id}", length: 20), defense_training_dataset_path(dataset), class: "text-primary" %>
+                <%= new_badge(dataset.created_at) %>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+
+      <%# ここから点線（このツールでは提供しない部分） %>
+      <div class="text-success my-1 d-flex flex-column align-items-center">
+        <div style="border-left: 2px dashed currentColor; height: 15px;"></div>
+        <div style="margin-top: -5px;">↓</div>
+      </div>
+
+      <%# 学習の実施 %>
+      <div class="border border-secondary rounded-pill px-3 py-1 bg-light text-center" style="border-style: dashed !important;">
+        <small class="text-muted">学習の実施</small>
+      </div>
+      <div class="text-success my-1 d-flex flex-column align-items-center">
+        <div style="border-left: 2px dashed currentColor; height: 15px;"></div>
+        <div style="margin-top: -5px;">↓</div>
+      </div>
+
+      <%# LLMの安全性向上の実現 %>
+      <div class="py-2 px-3 text-center">
+        <span class="fs-5"><strong class="text-success">LLMの安全性向上！</strong></span>
+      </div>
+    </div>
+  </div>
+
+  <%# 右の余白 (10%) %>
+  <div style="width: 10%;"></div>
+</div>

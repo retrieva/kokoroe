@@ -1,0 +1,19 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="me-3">初期<%= Defense::Policy.model_name.human %><%= @policy.id %>「<%= @policy.name.presence || "-" %>」</h2>
+    <div class="flex-shrink-0 d-flex flex-nowrap gap-2">
+      <% if @policy.completed? %>
+        <%= link_to "編集", edit_defense_initial_policy_path(@policy), class: "btn btn-outline-primary" %>
+      <% end %>
+      <%= link_to "削除", defense_initial_policy_path(@policy),
+          data: { turbo_method: :delete, turbo_confirm: "初期防衛方針「#{@policy.name}」を削除します。よろしいですか？" },
+          class: "btn btn-outline-danger" %>
+      <%= link_to "一覧", defense_initial_policies_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <%= turbo_stream_from "policy_#{@policy.id}" %>
+  <div id="policy_content_<%= @policy.id %>">
+    <%= render "defense/policies/data_content", policy: @policy %>
+  </div>
+</div>

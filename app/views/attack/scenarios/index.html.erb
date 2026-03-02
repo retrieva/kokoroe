@@ -1,0 +1,53 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><%= Attack::Scenario.model_name.human %>一覧</h2>
+    <div>
+      <%= link_to "新規作成", new_attack_scenario_path, class: "btn btn-primary" %>
+      <%= link_to "インポート", new_import_attack_scenarios_path, class: "btn btn-outline-primary" %>
+      <%= link_to "HOME", root_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <% if @scenarios.any? %>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th><%= Attack::Scenario.human_attribute_name(:name) %></th>
+            <th>概要</th>
+            <th><%= Attack::Scenario.human_attribute_name(:created_at) %></th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @scenarios.each do |scenario| %>
+            <tr>
+              <td><%= scenario.id %></td>
+              <td><%= link_to scenario.name.presence || "-", attack_scenario_path(scenario) %></td>
+              <td><%= scenario.summary %></td>
+              <td><%= l scenario.created_at, format: :compact %><%= new_badge(scenario.updated_at) %></td>
+              <td>
+                <%= link_to "編集", edit_attack_scenario_path(scenario), class: "btn btn-sm btn-outline-secondary" %>
+                <%= link_to "ダウンロード", download_attack_scenario_path(scenario), class: "btn btn-sm btn-outline-success" %>
+                <% if scenario.deletable? %>
+                  <%= link_to "削除", attack_scenario_path(scenario),
+                      data: { turbo_method: :delete, turbo_confirm: "攻撃シナリオ「#{scenario.name}」を削除します。よろしいですか？" },
+                      class: "btn btn-sm btn-outline-danger" %>
+                <% else %>
+                  <button type="button" class="btn btn-sm btn-outline-danger"
+                      onclick="alert('<%= scenario.undeletable_reason %>')">削除</button>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      <%= Attack::Scenario.model_name.human %>がまだ登録されていません。
+      <%= link_to "新規作成", new_attack_scenario_path, class: "alert-link" %>から始めましょう。
+    </div>
+  <% end %>
+</div>

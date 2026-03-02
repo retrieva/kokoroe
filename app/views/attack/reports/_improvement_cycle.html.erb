@@ -1,0 +1,329 @@
+<%# 攻撃結果レポート詳細用の改善サイクル表示 %>
+<%# execution: 攻撃実行（レポート） %>
+<%# initial_policies: 拡張元として選べる初期方針（コントローラから渡す） %>
+
+<%
+  # 前工程
+  prompt_set = execution.prompt_set
+  scenario = prompt_set&.scenario
+
+  # 後工程：防衛方針拡張（cycle_updated_atの新しい順に最大2つ）
+  extended_policies = execution.defense_policies.extended.order(cycle_updated_at: :desc).limit(2)
+  extended_policies_count = execution.defense_policies.extended.count
+
+  # 拡張元の初期方針
+  initial_policies = local_assigns[:initial_policies] || Defense::Policy.initial.completed.recent
+
+  # モーダルのユニークID
+  modal_id = "extensionModal#{execution.id}"
+%>
+
+<div class="improvement-cycle mb-4">
+
+  <% if extended_policies.any? %>
+    <!-- ツリー構造表示 -->
+    <% extended_policies.each_with_index do |policy, index| %>
+      <% show_header = (index == 0) %>
+      <div class="d-flex align-items-start <%= index > 0 ? 'mt-2' : '' %>">
+        <% if index == 0 %>
+          <!-- 攻撃シナリオ -->
+          <% if scenario %>
+            <%= link_to attack_scenario_path(scenario), class: "cycle-node text-decoration-none" do %>
+              <div class="d-flex flex-column align-items-center">
+                <div class="cycle-header">攻撃シナリオ</div>
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 40px; height: 40px;">
+                  <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <div class="cycle-data-name text-secondary">ID: <%= scenario.id %></div>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="cycle-node">
+              <div class="d-flex flex-column align-items-center">
+                <div class="cycle-header">攻撃シナリオ</div>
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+                  <i class="bi bi-file-earmark-text"></i>
+                </div>
+                <div class="cycle-data-name text-muted"></div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="cycle-node"></div>
+        <% end %>
+
+        <div class="cycle-line">
+          <div class="<%= index == 0 ? 'border-top border-secondary' : '' %>" style="border-width: 2px !important;"></div>
+        </div>
+
+        <% if index == 0 %>
+          <!-- プロンプト集 -->
+          <% if prompt_set %>
+            <%= link_to attack_prompt_set_path(prompt_set), class: "cycle-node text-decoration-none" do %>
+              <div class="d-flex flex-column align-items-center">
+                <div class="cycle-header">プロンプト集</div>
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 40px; height: 40px;">
+                  <i class="bi bi-collection"></i>
+                </div>
+                <div class="cycle-data-name text-secondary">ID: <%= prompt_set.id %></div>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="cycle-node">
+              <div class="d-flex flex-column align-items-center">
+                <div class="cycle-header">プロンプト集</div>
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+                  <i class="bi bi-collection"></i>
+                </div>
+                <div class="cycle-data-name text-muted"></div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="cycle-node"></div>
+        <% end %>
+
+        <div class="cycle-line">
+          <div class="<%= index == 0 ? 'border-top border-secondary' : '' %>" style="border-width: 2px !important;"></div>
+        </div>
+
+        <% if index == 0 %>
+          <!-- 攻撃結果レポート（現在地） -->
+          <div class="cycle-node">
+            <div class="d-flex flex-column align-items-center">
+              <div class="cycle-header">攻撃結果レポート</div>
+              <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 48px; height: 48px;">
+                <i class="bi bi-bar-chart fs-5"></i>
+              </div>
+              <div class="cycle-data-name fw-bold text-primary">ID: <%= execution.id %></div>
+            </div>
+          </div>
+        <% else %>
+          <div class="cycle-node"></div>
+        <% end %>
+
+        <div class="cycle-line">
+          <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+        </div>
+
+        <!-- 防衛方針 -->
+        <div class="cycle-node">
+          <div class="d-flex flex-column align-items-center">
+            <% if show_header %>
+              <% if extended_policies_count >= 3 %>
+                <%= link_to "防衛方針(#{extended_policies_count})", defense_policies_path, class: "cycle-header" %>
+              <% else %>
+                <div class="cycle-header">防衛方針</div>
+              <% end %>
+            <% end %>
+            <%= link_to defense_policy_path(policy), class: "text-decoration-none" do %>
+              <div class="d-flex flex-column align-items-center">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 40px; height: 40px;">
+                  <i class="bi bi-shield-check"></i>
+                </div>
+                <div class="cycle-data-name text-secondary">ID: <%= policy.id %></div>
+              </div>
+            <% end %>
+            <% if index == extended_policies.size - 1 && execution.completed? %>
+              <button type="button" class="btn btn-warning btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#<%= modal_id %>">
+                拡張
+              </button>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="cycle-line">
+          <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+        </div>
+
+        <!-- 学習データ -->
+        <% training_dataset = policy.training_datasets.order(created_at: :desc).first %>
+        <% if training_dataset %>
+          <%= link_to defense_training_dataset_path(training_dataset), class: "cycle-node text-decoration-none" do %>
+            <div class="d-flex flex-column align-items-center">
+              <% if show_header %><div class="cycle-header">学習データ</div><% end %>
+              <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 40px; height: 40px;">
+                <i class="bi bi-database"></i>
+              </div>
+              <div class="cycle-data-name text-secondary">ID: <%= training_dataset.id %></div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="cycle-node">
+            <div class="d-flex flex-column align-items-center">
+              <% if show_header %><div class="cycle-header">学習データ</div><% end %>
+              <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+                <i class="bi bi-database"></i>
+              </div>
+              <div class="cycle-data-name text-muted"></div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  <% else %>
+    <!-- シンプル表示 -->
+    <div class="d-flex align-items-center">
+      <!-- 攻撃シナリオ -->
+      <% if scenario %>
+        <%= link_to attack_scenario_path(scenario), class: "cycle-node text-decoration-none" do %>
+          <div class="d-flex flex-column align-items-center">
+            <div class="cycle-header">攻撃シナリオ</div>
+            <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 40px; height: 40px;">
+              <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <div class="cycle-data-name text-secondary">ID: <%= scenario.id %></div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="cycle-node">
+          <div class="d-flex flex-column align-items-center">
+            <div class="cycle-header">攻撃シナリオ</div>
+            <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+              <i class="bi bi-file-earmark-text"></i>
+            </div>
+            <div class="cycle-data-name text-muted"></div>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="cycle-line">
+        <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+      </div>
+
+      <!-- プロンプト集 -->
+      <% if prompt_set %>
+        <%= link_to attack_prompt_set_path(prompt_set), class: "cycle-node text-decoration-none" do %>
+          <div class="d-flex flex-column align-items-center">
+            <div class="cycle-header">プロンプト集</div>
+            <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 40px; height: 40px;">
+              <i class="bi bi-collection"></i>
+            </div>
+            <div class="cycle-data-name text-secondary">ID: <%= prompt_set.id %></div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="cycle-node">
+          <div class="d-flex flex-column align-items-center">
+            <div class="cycle-header">プロンプト集</div>
+            <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+              <i class="bi bi-collection"></i>
+            </div>
+            <div class="cycle-data-name text-muted"></div>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="cycle-line">
+        <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+      </div>
+
+      <!-- 攻撃結果レポート（現在地） -->
+      <div class="cycle-node">
+        <div class="d-flex flex-column align-items-center">
+          <div class="cycle-header">攻撃結果レポート</div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 48px; height: 48px;">
+            <i class="bi bi-bar-chart fs-5"></i>
+          </div>
+          <div class="cycle-data-name fw-bold text-primary">ID: <%= execution.id %></div>
+        </div>
+      </div>
+
+      <div class="cycle-line">
+        <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+      </div>
+
+      <!-- 防衛方針 -->
+      <div class="cycle-node">
+        <div class="d-flex flex-column align-items-center">
+          <div class="cycle-header">防衛方針</div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <div class="cycle-data-name text-muted"></div>
+          <% if execution.completed? %>
+            <button type="button" class="btn btn-warning btn-sm mt-2" data-bs-toggle="modal" data-bs-target="#<%= modal_id %>">
+              拡張
+            </button>
+          <% end %>
+        </div>
+      </div>
+
+      <div class="cycle-line">
+        <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+      </div>
+
+      <!-- 学習データ -->
+      <div class="cycle-node">
+        <div class="d-flex flex-column align-items-center">
+          <div class="cycle-header">学習データ</div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+            <i class="bi bi-database"></i>
+          </div>
+          <div class="cycle-data-name text-muted"></div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- 拡張モーダル -->
+<div class="modal fade" id="<%= modal_id %>" tabindex="-1" aria-labelledby="<%= modal_id %>Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="<%= modal_id %>Label">防衛方針の拡張</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <% if initial_policies.any? %>
+        <%= form_with url: defense_extensions_path, method: :post do |form| %>
+          <div class="modal-body">
+            <p class="text-muted">この攻撃結果を元に、選択した防衛方針を拡張します。</p>
+            <%= form.hidden_field :attack_execution_id, value: execution.id %>
+            <div class="mb-3">
+              <%= form.label :source_policy_id, "拡張元の防衛方針", class: "form-label" %>
+              <%= form.select :source_policy_id,
+                  initial_policies.map { |p|
+                    label = "#{p.name} (#{p.contents.size}件の内容)"
+                    [label, p.id]
+                  },
+                  { prompt: "防衛方針を選択してください" },
+                  class: "form-select", required: true %>
+            </div>
+            <div class="mb-3">
+              <%= form.label :name, "拡張後の防衛方針の名前", class: "form-label" %>
+              <%= form.text_field :name,
+                  value: execution.default_policy_name,
+                  class: "form-control",
+                  required: true %>
+            </div>
+            <div class="mb-3">
+              <%= form.label :llm, "LLM", class: "form-label" %>
+              <%= form.select :llm,
+                  [[Defense::Policy.ai_model_config.name, Defense::Policy.ai_model_config.name]],
+                  {},
+                  class: "form-control",
+                  disabled: true %>
+            </div>
+            <p class="text-muted">予想所要時間: <%= execution.estimated_extension_time %></p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+            <%= form.submit "拡張を実行", class: "btn btn-warning" %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="modal-body">
+          <div class="alert alert-warning mb-0">
+            <i class="bi bi-exclamation-triangle me-2"></i>
+            拡張元となる初期防衛方針がありません。<br>
+            先に<%= link_to "初期防衛方針を作成", new_defense_initial_policy_path %>してください。
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">閉じる</button>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,17 @@
+<div id="<%= dom_id %>">
+  <div class="progress mb-3" style="height: 30px;">
+    <div class="progress-bar progress-bar-striped progress-bar-animated"
+         role="progressbar"
+         style="width: <%= percentage %>%; transition: width 0.3s ease;"
+         aria-valuenow="<%= percentage %>"
+         aria-valuemin="0"
+         aria-valuemax="100">
+      <%= percentage %>%
+    </div>
+  </div>
+  <% if defined?(status) && status.present? %>
+    <div class="text-center text-muted">
+      <%= status %>
+    </div>
+  <% end %>
+</div>

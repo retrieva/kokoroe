@@ -1,0 +1,75 @@
+<%# 完了時: 学習データの詳細情報を表示 %>
+<%# dataset: 学習データ %>
+
+<%= render "shared/execution_histories/basic_info", execution_history: dataset %>
+
+<div class="card mb-4">
+  <div class="card-header">
+    <h5 class="mb-0">学習データ</h5>
+  </div>
+  <div class="card-body">
+    <p>作成した学習データを使って脆弱性を改善してみましょう。</p>
+    <ul class="list-group mb-3">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        SFT用学習データ
+        <%= link_to "ダウンロード", download_defense_training_dataset_path(dataset, format: :sft), class: "btn btn-sm btn-outline-primary", data: { turbo: false } %>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        DPO用学習データ
+        <%= link_to "ダウンロード", download_defense_training_dataset_path(dataset, format: :dpo), class: "btn btn-sm btn-outline-primary", data: { turbo: false } %>
+      </li>
+    </ul>
+    <p class="mb-1">
+      <strong>💡 SFT と DPO</strong>
+    </p>
+    <ul class="small mb-3">
+      <li><strong>SFT</strong>: 一般的なチューニング方式 (<%= link_to "OpenAI", "https://platform.openai.com/docs/guides/supervised-fine-tuning", target: "_blank", rel: "noopener" %>)</li>
+      <li><strong>DPO</strong>: 2つの応答を比較してチューニングする方式 (<%= link_to "OpenAI", "https://platform.openai.com/docs/guides/direct-preference-optimization", target: "_blank", rel: "noopener" %>)</li>
+    </ul>
+    <p class="mb-1">
+      <strong>💡 作成した学習データの使い道</strong>
+    </p>
+    <ul class="small mb-3">
+      <li>作成したデータはチューニングツール <%= link_to "retrieva/llm-tuning", "https://github.com/retrieva/llm-tuning", target: "_blank", rel: "noopener" %> に使用可能です。</li>
+      <li class="mb-1">作成したデータでチューニングしたモデル例</li>
+      <ul class="mb-0">
+        <li><%= link_to "Llama-3-Swallow-8B-Instruct-v0.1", "https://huggingface.co/retrieva-jp/Llama-3-Swallow-8B-Instruct-v0.1-kokoroe", target: "_blank", rel: "noopener" %></li>
+        <li><%= link_to "llm-jp-13b-instruct-v2.0 w/o AnswerCarefully", "https://huggingface.co/retrieva-jp/llm-jp-13b-instruct-v2.0-kokoroe", target: "_blank", rel: "noopener" %></li>
+      </ul>
+    </ul>
+  </div>
+</div>
+
+<% if dataset.report_body&.dig("training-data-stats").present? %>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="mb-0">カテゴリごとの学習データ件数</h5>
+    </div>
+    <div class="card-body">
+      <p>Blue-Teaming では、「Red-Teaming で明らかになった脆弱性の度合い」と元々の「深刻度」をもとに、カテゴリごとに作成する学習データの件数を決めています。具体的に何件作成されたかを下記でご確認いただけます。</p>
+      <%
+        stats = dataset.report_body["training-data-stats"]
+        overall_count = stats.dig("overall", "num-examples") || 0
+        categories = stats.except("overall")
+      %>
+      <%
+        chart_data = categories.map do |category, data|
+          count = data["num-examples"] || 0
+          percentage = overall_count > 0 ? (count.to_f / overall_count * 100).round(1) : 0
+          ["#{category}: #{number_with_delimiter(count)} 件 (#{percentage}%)", count]
+        end.to_h
+      %>
+      <%= pie_chart chart_data,
+                    donut: true,
+                    legend: "left",
+                    library: {
+                      plugins: {
+                        legend: {
+                          onClick: "function() {}".html_safe
+                        }
+                      }
+                    } %>
+      <p class="text-muted mb-0"><strong>全体: <%= number_with_delimiter(overall_count) %> 件</strong></p>
+    </div>
+  </div>
+<% end %>

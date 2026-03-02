@@ -1,0 +1,81 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>防衛方針一覧</h2>
+    <div>
+      <%= link_to "HOME", root_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <% if Defense::Policy.extended.count == 0 %>
+    <div class="alert alert-info">
+      防衛方針がまだありません。<%= link_to "攻撃レポート", attack_reports_path, class: "alert-link" %>から初期防衛方針を拡張して作成できます。
+    </div>
+  <% else %>
+    <!-- 絞り込みフォーム -->
+    <div class="mb-3">
+      <%= form_with url: defense_policies_path, method: :get, local: true do |f| %>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <%= f.label :source_policy_id, "初期防衛方針", class: "form-label" %>
+            <%= f.select :source_policy_id,
+                         options_from_collection_for_select(@initial_policies, :id, :name, params[:source_policy_id]),
+                         { include_blank: "すべて" },
+                         { class: "form-select" } %>
+          </div>
+          <div class="col-md-4">
+            <%= f.submit "絞り込む", class: "btn btn-primary" %>
+            <%= link_to "クリア", defense_policies_path, class: "btn btn-secondary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <% if @policies.empty? %>
+      <div class="alert alert-info">
+        条件に一致する防衛方針が見つかりませんでした。
+      </div>
+    <% else %>
+      <div class="table-responsive">
+        <table class="table table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>名前</th>
+              <th></th>
+              <th>作成日時</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @policies.each do |policy| %>
+              <tr>
+                <td><%= policy.id %></td>
+                <td>
+                  <%= link_to policy.name.presence || "-", defense_policy_path(policy) %>
+                </td>
+                <td>
+                  <% unless policy.completed? %>
+                    <span class="badge bg-<%= policy.failed? ? 'danger' : policy.running? ? 'primary' : 'secondary' %>">
+                      <%= policy.status_i18n %>
+                    </span>
+                  <% end %>
+                </td>
+                <td><%= l policy.created_at, format: :compact %><%= new_badge(policy.updated_at) %></td>
+                <td>
+                  <% if policy.deletable? %>
+                    <%= link_to "削除", defense_policy_path(policy),
+                        data: { turbo_method: :delete, turbo_confirm: "防衛方針「#{policy.name}」を削除します。よろしいですか？" },
+                        class: "btn btn-sm btn-outline-danger" %>
+                  <% else %>
+                    <button type="button" class="btn btn-sm btn-outline-danger"
+                        onclick="alert('<%= policy.undeletable_reason %>')">削除</button>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+    <% end %>
+  <% end %>
+</div>

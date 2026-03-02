@@ -1,0 +1,101 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>攻撃結果レポート一覧</h2>
+    <div>
+      <%= link_to "HOME", root_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <% if Attack::Execution.count == 0 %>
+    <div class="alert alert-info">
+      攻撃結果レポートがまだありません。<%= link_to "プロンプト集", attack_prompt_sets_path, class: "alert-link" %>から攻撃を実行すると、レポートが作成されます。
+    </div>
+  <% else %>
+    <% if params[:prompt_set_id].present? %>
+      <div class="mb-3">
+        <%= form_with url: attack_reports_path, method: :get, local: true do |f| %>
+          <div class="row g-3 align-items-end">
+            <div class="col-md-8">
+              <%= f.label :prompt_set_id, "プロンプト集", class: "form-label" %>
+              <%= f.select :prompt_set_id,
+                           options_from_collection_for_select(Attack::PromptSet.order(:name), :id, :name, params[:prompt_set_id]),
+                           { include_blank: "すべて" },
+                           { class: "form-select" } %>
+            </div>
+            <div class="col-md-4">
+              <%= f.submit "絞り込む", class: "btn btn-primary" %>
+              <%= link_to "クリア", attack_reports_path, class: "btn btn-secondary" %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+
+    <div class="mb-3">
+      <p class="text-muted">
+        <%= @pagy.count %>件中 <%= @pagy.from %>-<%= @pagy.to %>件を表示
+      </p>
+    </div>
+
+    <% if @executions.empty? %>
+      <div class="alert alert-info">
+        条件に一致する攻撃結果レポートが見つかりませんでした。
+      </div>
+    <% else %>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>名前</th>
+              <th></th>
+              <th>プロンプト集</th>
+              <th>作成日時</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @executions.each do |execution| %>
+              <tr>
+                <td><%= execution.id %></td>
+                <td>
+                  <%= link_to execution.name.presence || "-", attack_report_path(execution) %>
+                </td>
+                <td>
+                  <% unless execution.completed? %>
+                    <span class="badge bg-<%= execution.failed? ? 'danger' : execution.running? ? 'primary' : 'secondary' %>">
+                      <%= execution.status_i18n %>
+                    </span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if execution.prompt_set %>
+                    <%= execution.prompt_set.name %>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <%= l(execution.created_at, format: :compact) %>
+                  <%= new_badge(execution.updated_at) %>
+                </td>
+                <td>
+                  <% if execution.deletable? %>
+                    <%= link_to "削除", attack_report_path(execution),
+                        data: { turbo_method: :delete, turbo_confirm: "攻撃結果レポート「#{execution.name}」を削除します。よろしいですか？" },
+                        class: "btn btn-outline-danger btn-sm" %>
+                  <% else %>
+                    <button type="button" class="btn btn-outline-danger btn-sm"
+                        onclick="alert('<%= execution.undeletable_reason %>')">削除</button>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+    <% end %>
+  <% end %>
+</div>

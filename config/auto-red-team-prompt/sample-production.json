@@ -1,0 +1,6 @@
+{
+    "model_name": "SampleLLM",
+    "openai_api_base": "https://www.example.com/v1",
+    "temperature": 0.6,
+    "top_p": 0.9
+}

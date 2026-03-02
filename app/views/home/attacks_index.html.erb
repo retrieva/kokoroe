@@ -1,0 +1,20 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><%= link_to "ホーム", "/" %></li>
+    <li class="breadcrumb-item active" aria-current="page">攻撃一覧</li>
+  </ol>
+</nav>
+
+<h1>攻撃一覧</h1>
+
+<% for i in 1..5 %>
+  <div class="row my-1 bg-light rounded align-items-center">
+    <div class="col">
+      攻撃1
+    </div>
+    <div class="col-4 text-end">
+      <%= link_to "確認", "/attacks/1", class: "btn btn-primary" %>
+      <%= link_to "削除", "/tbd?next_url=/attacks", class: "btn btn-secondary" %>
+    </div>
+  </div>
+<% end %>

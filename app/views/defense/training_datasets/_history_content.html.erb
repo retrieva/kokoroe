@@ -1,0 +1,46 @@
+<%# 未完了時: 実行状況を表示 %>
+<%# dataset: 学習データ %>
+
+<div class="card">
+  <div class="card-body">
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <strong><%= Defense::TrainingDataset.human_attribute_name(:started_at) %>:</strong>
+      </div>
+      <div class="col-md-9">
+        <% if dataset.started_at %>
+          <%= l(dataset.started_at, format: :compact) %>
+        <% else %>
+          <span class="text-muted">-</span>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <strong>ステータス:</strong>
+      </div>
+      <div class="col-md-9">
+        <div id="training_dataset_status">
+          <%= render "status", dataset: dataset %>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <strong><%= Defense::TrainingDataset.human_attribute_name(:completed_at) %>:</strong>
+      </div>
+      <div class="col-md-9">
+        <% if dataset.completed_at || dataset.failed_at %>
+          <%= l(dataset.completed_at || dataset.failed_at, format: :compact) %>
+          <% if dataset.execution_time %>
+            <span class="ms-3 text-muted">⏱️ <%= format_duration(dataset.execution_time) %></span>
+          <% end %>
+        <% else %>
+          <span class="text-muted">-</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

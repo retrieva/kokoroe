@@ -1,0 +1,176 @@
+<%# 完了時: レポート情報を表示 %>
+<%# execution: 攻撃実行 %>
+<%# initial_policies: 拡張元として選べる初期方針 %>
+
+<%= render "shared/execution_histories/basic_info", execution_history: execution %>
+
+<% if execution.response_body.present? %>
+  <% response = execution.response_body["response"] || execution.response_body %>
+
+  <div class="card mb-4">
+    <div class="card-header">
+      <h5 class="card-title mb-0">攻撃結果レポート</h5>
+    </div>
+    <div class="card-body">
+      <% if response["overall-summary"].present? %>
+        <div class="mb-4">
+          <h6 class="fw-bold">全体サマリー</h6>
+          <div class="bg-light p-3 rounded markdown-content"><%= markdown(response["overall-summary"]) %></div>
+        </div>
+      <% end %>
+
+      <% if response["quantitative-summary"].present? %>
+        <div class="mb-4">
+          <h6 class="fw-bold">攻撃成功率</h6>
+          <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+              <thead class="table-dark">
+                <tr>
+                  <th>カテゴリ</th>
+                  <th class="text-center" style="width: 100px;">攻撃試行数</th>
+                  <th class="text-center" style="width: 100px;">攻撃成功数</th>
+                  <th class="text-center" style="width: 100px;">防衛成功数</th>
+                  <th style="width: 400px;">攻撃成功率</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% response["quantitative-summary"].each do |category, stats| %>
+                  <%
+                    number_of_attacks = stats["number_of_attacks"].to_i
+                    number_of_attack_successes = stats["number_of_successes"].to_i
+                    number_of_defenses = number_of_attacks - number_of_attack_successes
+                    attack_success_rate = (stats["success_rate"].to_f * 100).round(1)
+                    defense_rate = (100 - attack_success_rate).round(1)
+                  %>
+                  <tr>
+                    <td><%= link_to category, "#category-#{category.parameterize}", data: { turbo: false } %></td>
+                    <td class="text-center"><%= number_of_attacks %></td>
+                    <td class="text-center"><%= number_of_attack_successes %></td>
+                    <td class="text-center"><%= number_of_defenses %></td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <span class="me-2 text-danger fw-bold" style="min-width: 60px;"><%= attack_success_rate %>%</span>
+                        <div class="progress flex-grow-1" style="height: 25px;">
+                          <div class="progress-bar bg-danger" style="width: <%= attack_success_rate %>%"></div>
+                          <div class="progress-bar bg-primary" style="width: <%= defense_rate %>%"></div>
+                        </div>
+                      </div>
+                    </td>
+                  </tr>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      <% end %>
+
+      <% if response["qualitative-summary"].present? %>
+        <% response["qualitative-summary"].each do |category, examples| %>
+          <div class="mb-4">
+            <h6 class="fw-bold" id="category-<%= category.parameterize %>">カテゴリ <%= category %> の攻撃結果</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="bg-danger bg-opacity-10 p-3 rounded">
+                  <h6 class="text-danger">攻撃成功例</h6>
+                  <% attack_examples = examples["attack_success_examples"] %>
+                  <% if attack_examples.present? && attack_examples.any? %>
+                    <% initial_display_count = 3 %>
+                    <% all_examples_collapse_id = "attack-all-#{category.parameterize}" %>
+                    <% attack_examples.each_with_index do |example, index| %>
+                      <% collapse_id = "attack-#{category.parameterize}-#{index}" %>
+                      <% card_id = "attack-card-#{category.parameterize}-#{index}" %>
+                      <% response_text = example["response"].to_s %>
+                      <% truncate_length = 200 %>
+                      <% if index == initial_display_count %>
+                        <div class="collapse" id="<%= all_examples_collapse_id %>">
+                      <% end %>
+                      <div id="<%= card_id %>" class="mb-3 p-3 bg-white border border-danger rounded">
+                        <div class="mb-2">
+                          <strong>プロンプト <%= index + 1 %>:</strong>
+                          <p class="mb-1"><%= example["prompt"] %></p>
+                        </div>
+                        <div>
+                          <strong>応答:</strong>
+                          <% if response_text.length > truncate_length %>
+                            <div class="mb-0 text-muted markdown-content"><%= markdown(response_text.truncate(truncate_length, omission: "...")) %></div>
+                            <div class="collapse" id="<%= collapse_id %>" data-controller="collapse-scroll" data-collapse-scroll-target-value="<%= card_id %>">
+                              <div class="mb-0 text-muted markdown-content"><%= markdown(response_text) %></div>
+                            </div>
+                            <a class="btn btn-link btn-sm p-0 text-danger" data-bs-toggle="collapse" href="#<%= collapse_id %>" role="button" aria-expanded="false" aria-controls="<%= collapse_id %>">
+                              <span class="collapse-text-show">続きを読む</span>
+                              <span class="collapse-text-hide">閉じる</span>
+                            </a>
+                          <% else %>
+                            <div class="mb-0 text-muted markdown-content"><%= markdown(response_text) %></div>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                    <% if attack_examples.size > initial_display_count %>
+                      </div>
+                      <a class="btn btn-outline-danger btn-sm" data-bs-toggle="collapse" href="#<%= all_examples_collapse_id %>" role="button" aria-expanded="false" aria-controls="<%= all_examples_collapse_id %>">
+                        <span class="collapse-text-show">すべての事例を表示（残り<%= attack_examples.size - initial_display_count %>件）</span>
+                        <span class="collapse-text-hide">4件目以降を非表示</span>
+                      </a>
+                    <% end %>
+                  <% else %>
+                    <p class="text-muted">なし</p>
+                  <% end %>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="bg-primary bg-opacity-10 p-3 rounded">
+                  <h6 class="text-primary">防御成功例</h6>
+                  <% guard_examples = examples["guard_success_examples"] %>
+                  <% if guard_examples.present? && guard_examples.any? %>
+                    <% initial_display_count = 3 %>
+                    <% all_examples_collapse_id = "guard-all-#{category.parameterize}" %>
+                    <% guard_examples.each_with_index do |example, index| %>
+                      <% collapse_id = "guard-#{category.parameterize}-#{index}" %>
+                      <% card_id = "guard-card-#{category.parameterize}-#{index}" %>
+                      <% response_text = example["response"].to_s %>
+                      <% truncate_length = 200 %>
+                      <% if index == initial_display_count %>
+                        <div class="collapse" id="<%= all_examples_collapse_id %>">
+                      <% end %>
+                      <div id="<%= card_id %>" class="mb-3 p-3 bg-white border border-primary rounded">
+                        <div class="mb-2">
+                          <strong>プロンプト <%= index + 1 %>:</strong>
+                          <p class="mb-1"><%= example["prompt"] %></p>
+                        </div>
+                        <div>
+                          <strong>応答:</strong>
+                          <% if response_text.length > truncate_length %>
+                            <div class="mb-0 text-muted markdown-content"><%= markdown(response_text.truncate(truncate_length, omission: "...")) %></div>
+                            <div class="collapse" id="<%= collapse_id %>" data-controller="collapse-scroll" data-collapse-scroll-target-value="<%= card_id %>">
+                              <div class="mb-0 text-muted markdown-content"><%= markdown(response_text) %></div>
+                            </div>
+                            <a class="btn btn-link btn-sm p-0 text-primary" data-bs-toggle="collapse" href="#<%= collapse_id %>" role="button" aria-expanded="false" aria-controls="<%= collapse_id %>">
+                              <span class="collapse-text-show">続きを読む</span>
+                              <span class="collapse-text-hide">閉じる</span>
+                            </a>
+                          <% else %>
+                            <div class="mb-0 text-muted markdown-content"><%= markdown(response_text) %></div>
+                          <% end %>
+                        </div>
+                      </div>
+                    <% end %>
+                    <% if guard_examples.size > initial_display_count %>
+                      </div>
+                      <a class="btn btn-outline-primary btn-sm" data-bs-toggle="collapse" href="#<%= all_examples_collapse_id %>" role="button" aria-expanded="false" aria-controls="<%= all_examples_collapse_id %>">
+                        <span class="collapse-text-show">すべての事例を表示（残り<%= guard_examples.size - initial_display_count %>件）</span>
+                        <span class="collapse-text-hide">4件目以降を非表示</span>
+                      </a>
+                    <% end %>
+                  <% else %>
+                    <p class="text-muted">なし</p>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

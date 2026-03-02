@@ -1,0 +1,44 @@
+<div class="row mb-3">
+  <div class="col-md-3">
+    <strong><%= Attack::PromptSet.human_attribute_name(:started_at) %>:</strong>
+  </div>
+  <div class="col-md-9" id="started_at_<%= prompt_set.id %>">
+    <%= render "attack/prompt_sets/started_at", started_at: prompt_set.started_at %>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-3">
+    <strong>ステータス:</strong>
+  </div>
+  <div class="col-md-9">
+    <% if prompt_set.running? || prompt_set.pending? %>
+      <%= render "shared/progress_bar", dom_id: "progress_bar_#{prompt_set.id}", percentage: 0, status: "生成を開始しています..." %>
+    <% elsif prompt_set.completed? %>
+      <div id="progress_bar_<%= prompt_set.id %>">
+        <span class="badge bg-success">完了</span>
+      </div>
+    <% elsif prompt_set.failed? %>
+      <div id="progress_bar_<%= prompt_set.id %>">
+        <span class="badge bg-danger">失敗</span>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-3">
+    <strong><%= Attack::PromptSet.human_attribute_name(:completed_at) %>:</strong>
+  </div>
+  <div class="col-md-9">
+    <% if prompt_set.completed_at || prompt_set.failed_at %>
+      <%= l(prompt_set.completed_at || prompt_set.failed_at, format: :compact) %>
+      <% if prompt_set.execution_time %>
+        <span class="ms-3 text-muted">⏱️ <%= format_duration(prompt_set.execution_time) %></span>
+      <% end %>
+    <% else %>
+      <span class="text-muted">-</span>
+    <% end %>
+  </div>
+</div>
+

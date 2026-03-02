@@ -1,0 +1,64 @@
+<%# ステータス更新用パーシャル（Turboブロードキャスト用） %>
+<%# dataset: 学習データ %>
+
+<div id="training_dataset_status">
+<h5>
+  <span class="badge bg-<%= dataset.completed? ? 'success' : dataset.failed? ? 'danger' : dataset.running? ? 'primary' : 'secondary' %>">
+    <%= dataset.status_i18n %>
+  </span>
+</h5>
+
+<% if dataset.completed? %>
+  <p class="text-muted mt-2">
+    生成が完了しました。<%= link_to "ページを更新", defense_training_dataset_path(dataset) %>してダウンロードできます。
+  </p>
+<% elsif dataset.running? %>
+  <p class="text-muted">学習データを生成中です...</p>
+
+  <% if dataset.started_at %>
+    <%
+      # ステップごとの状態を判定するヘルパー
+      step_icon = ->(step_num, completed_path) do
+        if completed_path.present?
+          "✅"
+        elsif dataset.running? && dataset.current_step == step_num
+          "🔄"
+        else
+          "⏳"
+        end
+      end
+    %>
+    <h6 class="mt-4">各ステップの進捗:</h6>
+    <ul class="list-unstyled">
+      <li>
+        <%= step_icon.call(1, dataset.red_prompt_path) %>
+        ステップ1: 攻撃プロンプト生成
+        <% if dataset.running? && dataset.current_step == 1 && dataset.red_prompt_path.blank? %>
+          <span class="text-muted fst-italic">(実行中...)</span>
+        <% end %>
+      </li>
+      <li>
+        <%= step_icon.call(2, dataset.response_path) %>
+        ステップ2: 応答生成
+        <% if dataset.running? && dataset.current_step == 2 && dataset.response_path.blank? %>
+          <span class="text-muted fst-italic">(実行中...)</span>
+        <% end %>
+      </li>
+      <li>
+        <%= step_icon.call(3, dataset.corrected_response_path) %>
+        ステップ3: 応答修正
+        <% if dataset.running? && dataset.current_step == 3 && dataset.corrected_response_path.blank? %>
+          <span class="text-muted fst-italic">(実行中...)</span>
+        <% end %>
+      </li>
+      <li>
+        <%= step_icon.call(4, dataset.sft_data_path) %>
+        ステップ4: 学習データ保存
+        <% if dataset.running? && dataset.current_step == 4 && dataset.sft_data_path.blank? %>
+          <span class="text-muted fst-italic">(実行中...)</span>
+        <% end %>
+      </li>
+    </ul>
+  <% end %>
+<% end %>
+</div>

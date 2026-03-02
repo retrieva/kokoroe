@@ -1,0 +1,8 @@
+<div class="container mt-4">
+  <h2>初期<%= Defense::Policy.model_name.human %><%= @policy.id %>「<%= @policy.name.presence || "-" %>」の編集</h2>
+  <div class="card mt-4">
+    <div class="card-body">
+      <%= render "form", policy: @policy %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+<div class="row mb-3">
+  <div class="col-md-3">
+    <strong><%= Attack::Execution.human_attribute_name(:started_at) %>:</strong>
+  </div>
+  <div class="col-md-9" id="started_at_<%= execution.id %>">
+    <%= render "attack/reports/started_at", started_at: execution.started_at %>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-3">
+    <strong>ステータス:</strong>
+  </div>
+  <div class="col-md-9">
+    <%= render "attack/reports/status", execution: execution %>
+  </div>
+</div>
+
+<div class="row mb-3">
+  <div class="col-md-3">
+    <strong><%= Attack::Execution.human_attribute_name(:completed_at) %>:</strong>
+  </div>
+  <div class="col-md-9">
+    <% if execution.completed_at || execution.failed_at %>
+      <%= l(execution.completed_at || execution.failed_at, format: :compact) %>
+      <% if execution.execution_time %>
+        <span class="ms-3 text-muted">⏱️ <%= format_duration(execution.execution_time) %></span>
+      <% end %>
+    <% else %>
+      <span class="text-muted">-</span>
+    <% end %>
+  </div>
+</div>

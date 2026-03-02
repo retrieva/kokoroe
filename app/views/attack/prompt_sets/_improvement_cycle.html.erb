@@ -1,0 +1,123 @@
+<%# プロンプト集詳細用の改善サイクル表示 %>
+<%# prompt_set: プロンプト集 %>
+
+<%
+  # 前工程：攻撃シナリオ（0個または1個）
+  scenario = prompt_set.scenario
+
+  # 後工程：攻撃（cycle_updated_atの新しい順に最大2つ）
+  executions = prompt_set.executions.order(cycle_updated_at: :desc).limit(2)
+%>
+
+<div class="improvement-cycle mb-4">
+
+  <% if executions.any? %>
+    <!-- ツリー構造表示 -->
+    <% executions.each_with_index do |execution, index| %>
+      <% show_header = (index == 0) %>
+      <div class="d-flex align-items-start <%= index > 0 ? 'mt-2' : '' %>">
+        <% if index == 0 %>
+          <!-- 攻撃シナリオ -->
+          <% if scenario %>
+            <%= link_to attack_scenario_path(scenario), class: "cycle-node text-decoration-none" do %>
+              <div class="d-flex flex-column align-items-center">
+                <div class="cycle-header">攻撃シナリオ</div>
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 48px; height: 48px;">
+                  <i class="bi bi-file-earmark-text fs-5"></i>
+                </div>
+                <div class="cycle-data-name text-secondary">ID: <%= scenario.id %></div>
+              </div>
+            <% end %>
+          <% else %>
+            <div class="cycle-node">
+              <div class="d-flex flex-column align-items-center">
+                <div class="cycle-header">攻撃シナリオ</div>
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 48px; height: 48px;">
+                  <i class="bi bi-file-earmark-text fs-5"></i>
+                </div>
+                <div class="cycle-data-name text-muted"></div>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="cycle-node"></div>
+        <% end %>
+
+        <div class="cycle-line">
+          <div class="<%= index == 0 ? 'border-top border-secondary' : '' %>" style="border-width: 2px !important;"></div>
+        </div>
+
+        <% if index == 0 %>
+          <!-- プロンプト集（現在地） -->
+          <div class="cycle-node">
+            <div class="d-flex flex-column align-items-center">
+              <div class="cycle-header">プロンプト集</div>
+              <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 48px; height: 48px;">
+                <i class="bi bi-collection fs-5"></i>
+              </div>
+              <div class="cycle-data-name fw-bold text-primary">ID: <%= prompt_set.id %></div>
+            </div>
+          </div>
+        <% else %>
+          <div class="cycle-node"></div>
+        <% end %>
+
+        <div class="cycle-line">
+          <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+        </div>
+
+        <!-- 攻撃結果レポート以降 -->
+        <% is_last = (index == executions.size - 1) %>
+        <%= render "shared/improvement_cycle_from_execution", execution: execution, show_header: show_header, prompt_set: (is_last && prompt_set.completed? ? prompt_set : nil) %>
+      </div>
+    <% end %>
+  <% else %>
+    <!-- シンプル表示 -->
+    <div class="d-flex align-items-center">
+      <!-- 攻撃シナリオ -->
+      <% if scenario %>
+        <%= link_to attack_scenario_path(scenario), class: "cycle-node text-decoration-none" do %>
+          <div class="d-flex flex-column align-items-center">
+            <div class="cycle-header">攻撃シナリオ</div>
+            <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 48px; height: 48px;">
+              <i class="bi bi-file-earmark-text fs-5"></i>
+            </div>
+            <div class="cycle-data-name text-secondary">ID: <%= scenario.id %></div>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="cycle-node">
+          <div class="d-flex flex-column align-items-center">
+            <div class="cycle-header">攻撃シナリオ</div>
+            <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 48px; height: 48px;">
+              <i class="bi bi-file-earmark-text fs-5"></i>
+            </div>
+            <div class="cycle-data-name text-muted"></div>
+          </div>
+        </div>
+      <% end %>
+
+      <div class="cycle-line">
+        <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+      </div>
+
+      <!-- プロンプト集（現在地） -->
+      <div class="cycle-node">
+        <div class="d-flex flex-column align-items-center">
+          <div class="cycle-header">プロンプト集</div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 48px; height: 48px;">
+            <i class="bi bi-collection fs-5"></i>
+          </div>
+          <div class="cycle-data-name fw-bold text-primary">ID: <%= prompt_set.id %></div>
+        </div>
+      </div>
+
+      <div class="cycle-line">
+        <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+      </div>
+
+      <!-- 攻撃結果レポート以降（未完了） -->
+      <%= render "shared/improvement_cycle_from_execution", execution: nil, prompt_set: (prompt_set.completed? ? prompt_set : nil) %>
+    </div>
+  <% end %>
+</div>

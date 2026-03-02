@@ -1,0 +1,12 @@
+<%# 未完了時: 実行状況を表示 %>
+<%# execution: 攻撃実行 %>
+
+<div class="card">
+  <div class="card-body">
+    <%= turbo_stream_from "progress_#{execution.id}" %>
+    <%= turbo_stream_from "attack_execution_#{execution.id}" %>
+    <div id="execution_content_<%= execution.id %>">
+      <%= render "attack/reports/execution_content", execution: execution %>
+    </div>
+  </div>
+</div>

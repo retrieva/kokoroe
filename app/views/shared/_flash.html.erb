@@ -1,0 +1,16 @@
+<% notice_message = local_assigns[:notice_message] || notice %>
+<% alert_message = local_assigns[:alert_message] || alert %>
+
+<% if notice_message.present? %>
+  <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+    <%= notice_message %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<% if alert_message.present? %>
+  <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+    <%= alert_message %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>

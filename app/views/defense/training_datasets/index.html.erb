@@ -1,0 +1,101 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>学習データ一覧</h2>
+    <div>
+      <%= link_to "HOME", root_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <% if Defense::TrainingDataset.count == 0 %>
+    <div class="alert alert-info">
+      学習データがまだありません。<%= link_to "防衛方針", defense_policies_path, class: "alert-link" %>から学習データを生成できます。
+    </div>
+  <% else %>
+    <!-- 絞り込みフォーム -->
+    <div class="mb-3">
+      <%= form_with url: defense_training_datasets_path, method: :get, local: true do |f| %>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <%= f.label :defense_policy_id, "防衛方針", class: "form-label" %>
+            <%= f.select :defense_policy_id,
+                         options_from_collection_for_select(@policy_options, :id, :name, params[:defense_policy_id]),
+                         { include_blank: "すべて" },
+                         { class: "form-select" } %>
+          </div>
+          <div class="col-md-4">
+            <%= f.submit "絞り込む", class: "btn btn-primary" %>
+            <%= link_to "クリア", defense_training_datasets_path, class: "btn btn-secondary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- 件数表示 -->
+    <div class="mb-3">
+      <p class="text-muted">
+        <%= @pagy.count %>件中 <%= @pagy.from %>-<%= @pagy.to %>件を表示
+      </p>
+    </div>
+
+    <% if @datasets.empty? %>
+      <div class="alert alert-info">
+        条件に一致する学習データが見つかりませんでした。
+      </div>
+    <% else %>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>名前</th>
+              <th></th>
+              <th>防衛方針</th>
+              <th>作成日時</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @datasets.each do |dataset| %>
+              <tr>
+                <td><%= dataset.id %></td>
+                <td>
+                  <%= link_to dataset.name.presence || "-", defense_training_dataset_path(dataset) %>
+                </td>
+                <td>
+                  <% unless dataset.completed? %>
+                    <span class="badge bg-<%= dataset.failed? ? 'danger' : dataset.running? ? 'primary' : 'secondary' %>">
+                      <%= dataset.status_i18n %>
+                    </span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if dataset.policy %>
+                    <%= dataset.policy.name %>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <%= l(dataset.created_at, format: :compact) %>
+                  <%= new_badge(dataset.updated_at) %>
+                </td>
+                <td>
+                  <% if dataset.deletable? %>
+                    <%= link_to "削除", defense_training_dataset_path(dataset),
+                        data: { turbo_method: :delete, turbo_confirm: "学習データ「#{dataset.name}」を削除します。よろしいですか？" },
+                        class: "btn btn-outline-danger btn-sm" %>
+                  <% else %>
+                    <button type="button" class="btn btn-outline-danger btn-sm"
+                        onclick="alert('<%= dataset.undeletable_reason %>')">削除</button>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+    <% end %>
+  <% end %>
+</div>

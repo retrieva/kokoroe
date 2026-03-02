@@ -1,0 +1,188 @@
+<%# 攻撃シナリオ詳細用の改善サイクル表示 %>
+<%# scenario: 攻撃シナリオ %>
+
+<%
+  # プロンプト集を取得（cycle_updated_atの新しい順に最大2つ）
+  prompt_sets = scenario.prompt_sets.order(cycle_updated_at: :desc).limit(2)
+  prompt_sets_count = scenario.prompt_sets.count
+
+  # モーダルのユニークID
+  modal_id = "promptSetModal#{scenario.id}"
+%>
+
+<div class="improvement-cycle mb-4">
+
+  <% if prompt_sets.any? %>
+    <!-- ツリー構造表示 -->
+    <% prompt_sets.each_with_index do |prompt_set, index| %>
+      <% show_header = (index == 0) %>
+      <div class="d-flex align-items-center <%= index > 0 ? 'mt-2' : '' %>">
+        <% if index == 0 %>
+          <!-- 攻撃シナリオ（現在地） -->
+          <div class="cycle-node">
+            <div class="d-flex flex-column align-items-center">
+              <div class="cycle-header">攻撃シナリオ</div>
+              <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 48px; height: 48px;">
+                <i class="bi bi-file-earmark-text fs-5"></i>
+              </div>
+              <div class="cycle-data-name fw-bold text-primary">ID: <%= scenario.id %></div>
+            </div>
+          </div>
+        <% else %>
+          <!-- スペーサー -->
+          <div class="cycle-node"></div>
+        <% end %>
+
+        <div class="cycle-line">
+          <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+        </div>
+
+        <!-- プロンプト集 -->
+        <div class="cycle-node">
+          <div class="d-flex flex-column align-items-center">
+            <% if show_header %>
+              <% if prompt_sets_count >= 3 %>
+                <%= link_to "プロンプト集(#{prompt_sets_count})", attack_prompt_sets_path(scenario_id: scenario.id), class: "cycle-header" %>
+              <% else %>
+                <div class="cycle-header">プロンプト集</div>
+              <% end %>
+            <% end %>
+            <%= link_to attack_prompt_set_path(prompt_set), class: "text-decoration-none" do %>
+              <div class="d-flex flex-column align-items-center">
+                <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 40px; height: 40px;">
+                  <i class="bi bi-collection"></i>
+                </div>
+                <div class="cycle-data-name text-secondary">ID: <%= prompt_set.id %></div>
+              </div>
+            <% end %>
+            <% if index == prompt_sets.size - 1 %>
+              <button type="button" class="btn btn-warning mt-2" data-bs-toggle="modal" data-bs-target="#<%= modal_id %>">
+                生成
+              </button>
+            <% end %>
+          </div>
+        </div>
+
+        <div class="cycle-line">
+          <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+        </div>
+
+        <!-- 攻撃結果レポート以降 -->
+        <% execution = prompt_set.executions.order(created_at: :desc).first %>
+        <%= render "shared/improvement_cycle_from_execution", execution: execution, show_header: show_header %>
+      </div>
+    <% end %>
+  <% else %>
+    <!-- シンプルなフロー表示（プロンプト集がない場合） -->
+    <div class="d-flex align-items-center">
+      <!-- 攻撃シナリオ（現在地） -->
+      <div class="cycle-node">
+        <div class="d-flex flex-column align-items-center">
+          <div class="cycle-header">攻撃シナリオ</div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-primary text-white" style="width: 48px; height: 48px;">
+            <i class="bi bi-file-earmark-text fs-5"></i>
+          </div>
+          <div class="cycle-data-name fw-bold text-primary">ID: <%= scenario.id %></div>
+        </div>
+      </div>
+      <div class="cycle-line">
+        <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+      </div>
+
+      <!-- プロンプト集 -->
+      <div class="cycle-node">
+        <div class="d-flex flex-column align-items-center">
+          <div class="cycle-header">プロンプト集</div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 48px; height: 48px;">
+            <i class="bi bi-collection fs-5"></i>
+          </div>
+          <div class="cycle-data-name text-muted"></div>
+          <button type="button" class="btn btn-warning mt-2" data-bs-toggle="modal" data-bs-target="#<%= modal_id %>">
+          生成
+        </button>
+        </div>
+      </div>
+      <div class="cycle-line">
+        <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+      </div>
+
+      <!-- 攻撃結果レポート -->
+      <div class="cycle-node">
+        <div class="d-flex flex-column align-items-center">
+          <div class="cycle-header">攻撃結果レポート</div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 48px; height: 48px;">
+            <i class="bi bi-bar-chart fs-5"></i>
+          </div>
+          <div class="cycle-data-name text-muted"></div>
+        </div>
+      </div>
+      <div class="cycle-line">
+        <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+      </div>
+
+      <!-- 防衛方針 -->
+      <div class="cycle-node">
+        <div class="d-flex flex-column align-items-center">
+          <div class="cycle-header">防衛方針</div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 48px; height: 48px;">
+            <i class="bi bi-shield-check fs-5"></i>
+          </div>
+          <div class="cycle-data-name text-muted"></div>
+        </div>
+      </div>
+      <div class="cycle-line">
+        <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+      </div>
+
+      <!-- 学習データ -->
+      <div class="cycle-node">
+        <div class="d-flex flex-column align-items-center">
+          <div class="cycle-header">学習データ</div>
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 48px; height: 48px;">
+            <i class="bi bi-database fs-5"></i>
+          </div>
+          <div class="cycle-data-name text-muted"></div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- プロンプト集生成モーダル -->
+<div class="modal fade" id="<%= modal_id %>" tabindex="-1" aria-labelledby="<%= modal_id %>Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="<%= modal_id %>Label">プロンプト集の生成</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <%= form_with url: attack_scenario_prompt_sets_path(scenario), method: :post do |form| %>
+        <div class="modal-body">
+          <p class="text-muted">攻撃シナリオ「<%= scenario.name %>」からプロンプト集を生成します。</p>
+          <div class="mb-3">
+            <%= form.label :name, "プロンプト集の名前", class: "form-label" %>
+            <%= form.text_field :name,
+                value: scenario.default_prompt_set_name,
+                class: "form-control",
+                required: true %>
+          </div>
+          <div class="mb-3">
+            <%= form.label :llm, "LLM", class: "form-label" %>
+            <%= form.select :llm,
+                [[Attack::PromptSet.ai_model_config.name, Attack::PromptSet.ai_model_config.name]],
+                {},
+                class: "form-control",
+                disabled: true %>
+          </div>
+          <% if scenario.estimated_prompt_generation_time %>
+            <p class="text-muted">予想所要時間: <%= scenario.estimated_prompt_generation_time %></p>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+          <%= form.submit "生成を開始", class: "btn btn-warning" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

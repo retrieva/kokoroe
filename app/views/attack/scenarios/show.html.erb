@@ -1,0 +1,71 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="me-3"><%= Attack::Scenario.model_name.human %><%= @scenario.id %>「<%= @scenario.name.presence || "-" %>」</h2>
+    <div class="flex-shrink-0 d-flex flex-nowrap gap-2">
+      <%= link_to "編集", edit_attack_scenario_path(@scenario), class: "btn btn-outline-primary" %>
+      <%= link_to "ダウンロード", download_attack_scenario_path(@scenario), class: "btn btn-outline-success", data: { turbo: false } %>
+      <%= link_to "削除", attack_scenario_path(@scenario),
+          data: { turbo_method: :delete, turbo_confirm: "攻撃シナリオ「#{@scenario.name}」を削除します。よろしいですか？" },
+          class: "btn btn-outline-danger" %>
+      <%= link_to "一覧", attack_scenarios_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <%= render "improvement_cycle", scenario: @scenario %>
+
+  <div class="card mb-4">
+    <div class="card-body">
+      <h6 class="card-title fw-bold">基本情報</h6>
+      <div class="row">
+        <div class="col-md-3">
+          シナリオ名:
+        </div>
+        <div class="col-md-9">
+          <%= @scenario.name %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h5 class="mb-0">攻撃詳細</h5>
+    </div>
+    <div class="card-body">
+      <% if @scenario.details.any? %>
+        <% @scenario.details.each do |detail| %>
+          <div class="card mb-3">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-md-3">
+                  <strong>カテゴリ:</strong>
+                  <p><%= detail.category %></p>
+                </div>
+                <div class="col-md-6">
+                  <strong>説明:</strong>
+                  <p><%= detail.description %></p>
+                </div>
+                <div class="col-md-3">
+                  <strong>重要度:</strong>
+                  <p><%= detail.severity %></p>
+                </div>
+              </div>
+              <% if detail.examples.any? %>
+                <div class="mt-3">
+                  <strong>例:</strong>
+                  <ul>
+                    <% detail.examples.each do |example| %>
+                      <li><%= example.text %></li>
+                    <% end %>
+                  </ul>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-muted">詳細はまだ登録されていません。</p>
+      <% end %>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,84 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>拡張履歴一覧</h2>
+  </div>
+
+  <!-- 絞り込みフォーム -->
+  <div class="mb-3">
+    <%= form_with url: defense_extensions_path, method: :get, local: true do |f| %>
+      <div class="row g-3 align-items-end">
+        <div class="col-md-4">
+          <%= f.label :source_policy_id, "元の防衛方針", class: "form-label" %>
+          <%= f.select :source_policy_id,
+                       options_from_collection_for_select(@source_policies, :id, ->(p) { "方針 ##{p.id} (#{l(p.created_at, format: :compact)})" }, params[:source_policy_id]),
+                       { include_blank: "すべて" },
+                       { class: "form-select" } %>
+        </div>
+        <div class="col-md-4">
+          <%= f.label :status, "ステータス", class: "form-label" %>
+          <%= f.select :status,
+                       options_for_select(Defense::Policy.statuses_i18n.invert, params[:status]),
+                       { include_blank: "すべて" },
+                       { class: "form-select" } %>
+        </div>
+        <div class="col-md-4">
+          <%= f.submit "絞り込む", class: "btn btn-primary" %>
+          <%= link_to "クリア", defense_extensions_path, class: "btn btn-secondary" %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @source_policy %>
+    <div class="alert alert-info">
+      <strong>防衛方針 #<%= @source_policy.id %></strong> の拡張履歴を表示しています
+      <%= link_to "方針の詳細を見る", defense_policy_path(@source_policy), class: "alert-link" %>
+    </div>
+  <% end %>
+
+  <!-- 件数表示 -->
+  <div class="mb-3">
+    <p class="text-muted">
+      <%= @extensions.size %>件を表示
+    </p>
+  </div>
+
+  <% if @extensions.any? %>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>方針ID</th>
+            <th>実行日時</th>
+            <th>元の方針</th>
+            <th>参照攻撃</th>
+            <th>ステータス</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @extensions.each do |policy| %>
+            <tr>
+              <td><%= policy.id %></td>
+              <td><%= l policy.created_at, format: :compact %></td>
+              <td><%= link_to "方針 ##{policy.source_policy_id}", defense_policy_path(policy.source_policy) %></td>
+              <td><%= link_to "攻撃 ##{policy.attack_execution_id}", attack_report_path(policy.attack_execution) %></td>
+              <td>
+                <span class="badge bg-<%= policy.completed? ? 'success' : policy.failed? ? 'danger' : policy.running? ? 'primary' : 'secondary' %>">
+                  <%= policy.status_i18n %>
+                </span>
+              </td>
+              <td>
+                <%= link_to "詳細", defense_policy_path(policy), class: "btn btn-sm btn-outline-primary" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% else %>
+    <div class="alert alert-info">
+      拡張履歴が見つかりませんでした。
+    </div>
+  <% end %>
+</div>

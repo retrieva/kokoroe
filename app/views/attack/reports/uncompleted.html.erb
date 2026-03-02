@@ -1,0 +1,55 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>未完了の攻撃実行</h2>
+  </div>
+
+  <% if @executions.empty? %>
+    <p class="text-muted">未完了の攻撃実行はありません。</p>
+  <% else %>
+    <!-- 件数表示 -->
+    <div class="mb-3">
+      <p class="text-muted">
+        <%= @pagy.count %>件中 <%= @pagy.from || 0 %>-<%= @pagy.to || 0 %>件を表示
+      </p>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th><%= Attack::Execution.human_attribute_name(:started_at) %></th>
+            <th>プロンプト集</th>
+            <th>ステータス</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @executions.each do |execution| %>
+            <tr>
+              <td>
+                <% if execution.started_at %>
+                  <%= link_to l(execution.started_at, format: :compact), attack_report_path(execution) %>
+                <% else %>
+                  <%= link_to "-", attack_report_path(execution) %>
+                <% end %>
+              </td>
+              <td>
+                <% if execution.prompt_set %>
+                  <%= execution.prompt_set.name %>
+                <% else %>
+                  <span class="text-muted">-</span>
+                <% end %>
+              </td>
+              <td>
+                <span class="badge bg-<%= execution.failed? ? 'danger' : execution.running? ? 'primary' : 'secondary' %>">
+                  <%= execution.status_i18n %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+  <% end %>
+</div>

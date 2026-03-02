@@ -1,0 +1,22 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li class="breadcrumb-item"><%= link_to "ホーム", "/" %></li>
+    <li class="breadcrumb-item"><%= link_to "攻撃一覧", "/attacks" %></li>
+    <li class="breadcrumb-item active" aria-current="page">攻撃詳細</li>
+  </ol>
+</nav>
+
+<h1>攻撃詳細</h1>
+
+<h2>実行した攻撃プロンプト集</h2>
+<%= link_to "攻撃シナリオ1の攻撃プロンプト集", "/attack_prompt_collections/1" %>
+
+<h2>攻撃結果レポート</h2>
+<%= render "report" %>
+
+<h2>操作</h2>
+<div class="row my-1">
+  <div class="col text-end">
+    <%= link_to "この攻撃結果をもとに、初期防衛シナリオを選んで防衛シナリオを生成する", "/tbd?next_url=#{CGI.escape("/jobs/dummy_python/new?seconds=1&next_url=#{CGI.escape("/attacks/1/defend_scenarios/1")}")}", class: "btn btn-primary" %>
+  </div>
+</div>

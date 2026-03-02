@@ -1,0 +1,23 @@
+<h1>ジョブの進捗</h1>
+
+<div class="js-job-progress" data-job-id="<%= @job.active_job_id %>">
+  <div class="progress mb-3" style="height: 30px;">
+    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+         role="progressbar" 
+         style="width: <%= @job.finished? ? 100 : 0 %>%;" 
+         aria-valuenow="<%= @job.finished? ? 100 : 0 %>" 
+         aria-valuemin="0" 
+         aria-valuemax="100">
+    </div>
+  </div>
+  <div class="progress-text text-center">
+    <%= @job.finished? ? 100 : 0 %>%
+  </div>
+</div>
+
+<% if @next_url.present? %>
+  <div class="js-next-action" <% unless @job.finished? %>style="display: none;"<% end %>>
+    <h2>ジョブが完了しました</h2>
+    <%= link_to "想定遷移先へ進む", @next_url %>
+  </div>
+<% end %>

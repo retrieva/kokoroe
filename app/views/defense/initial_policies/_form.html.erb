@@ -1,0 +1,32 @@
+<%= form_with(model: policy, url: policy.persisted? ? defense_initial_policy_path(policy) : defense_initial_policies_path, local: true) do |form| %>
+  <% if policy.errors.any? %>
+    <div class="alert alert-danger">
+      <h4><%= policy.errors.count %>件のエラーがあります</h4>
+      <ul>
+        <% policy.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :name, "名前", class: "form-label" %>
+    <%= form.text_field :name, class: "form-control", required: true %>
+  </div>
+
+  <div class="mb-3">
+    <%= form.label :contents_text, "防衛方針（1行につき1つの方針を入力してください）", class: "form-label" %>
+    <%= form.text_area :contents_text,
+                       value: policy.contents.join("\n"),
+                       class: "form-control",
+                       rows: 15,
+                       style: "line-height: 1.75;",
+                       placeholder: "例：\n自由、平等、そして先見性の価値観を重視し、民主主義を尊重してください。\n人権差別・性差別問題が起きがちな文言、宗教、政教、政党などの思想の価値に基づく表現が出ないか出来る限り警戒してください。" %>
+  </div>
+
+  <div class="d-flex gap-2">
+    <%= form.submit policy.persisted? ? "更新" : "作成", class: "btn btn-primary" %>
+    <%= link_to "キャンセル", policy.persisted? ? defense_initial_policy_path(policy) : defense_initial_policies_path, class: "btn btn-outline-secondary" %>
+  </div>
+<% end %>

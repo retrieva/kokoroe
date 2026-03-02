@@ -1,0 +1,32 @@
+<%# 完了時: 基本情報とプロンプト一覧を表示 %>
+<%# prompt_set: プロンプト集 %>
+
+<%= render "shared/execution_histories/basic_info", execution_history: prompt_set %>
+
+<div class="card">
+  <div class="card-header d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">プロンプト一覧</h5>
+    <span class="text-muted">全<%= prompt_set.prompts.count %>件</span>
+  </div>
+  <div class="card-body">
+    <% if prompt_set.prompts.any? %>
+      <% prompt_set.categorized_prompts.each do |category, prompts| %>
+        <div class="mb-4">
+          <div class="d-flex justify-content-between align-items-center bg-primary bg-opacity-10 rounded px-3 py-2 mb-2">
+            <span class="fw-bold text-primary fs-5"><%= category %></span>
+            <span class="text-muted"><%= prompts.count %>件</span>
+          </div>
+          <ul class="list-group">
+            <% prompts.each do |prompt| %>
+              <li class="list-group-item">
+                <%= prompt.text %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    <% else %>
+      <p class="text-muted">プロンプトがありません。</p>
+    <% end %>
+  </div>
+</div>

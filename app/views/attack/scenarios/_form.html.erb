@@ -1,0 +1,5 @@
+<div id="scenario-form">
+  <%= render 'error', scenario: scenario %>
+  <p class="text-end text-secondary" style="opacity: 0.7;">※ このエディタでは、次行の入力欄が自動的に用意されます</p>
+  <%= render 'form_content', scenario: scenario, url: url, submit_text: submit_text, cancel_path: cancel_path %>
+</div>

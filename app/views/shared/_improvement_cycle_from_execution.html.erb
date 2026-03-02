@@ -1,0 +1,180 @@
+<%# 攻撃結果レポート以降のツリーを描画するパーシャル %>
+<%# execution: Attack::Execution（nilの場合は未完了表示） %>
+<%# show_header: ヘッダを表示するか（デフォルトtrue） %>
+<%# prompt_set: Attack::PromptSet（指定時は攻撃ボタンを表示） %>
+
+<% show_header = local_assigns.fetch(:show_header, true) %>
+<% prompt_set = local_assigns[:prompt_set] %>
+<% attack_modal_id = "attackModal#{prompt_set&.id}" %>
+
+<% if execution %>
+  <% extended_policy = execution.defense_policies.extended.order(created_at: :desc).first %>
+  <% training_dataset = extended_policy&.training_datasets&.order(created_at: :desc)&.first %>
+
+  <!-- 攻撃結果レポート -->
+  <div class="cycle-node">
+    <div class="d-flex flex-column align-items-center">
+      <% if show_header %><div class="cycle-header">攻撃結果レポート</div><% end %>
+      <%= link_to attack_report_path(execution), class: "text-decoration-none" do %>
+        <div class="d-flex flex-column align-items-center">
+          <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 40px; height: 40px;">
+            <i class="bi bi-bar-chart"></i>
+          </div>
+          <div class="cycle-data-name text-secondary">ID: <%= execution.id %></div>
+        </div>
+      <% end %>
+      <% if prompt_set %>
+        <button type="button" class="btn btn-warning mt-2" data-bs-toggle="modal" data-bs-target="#<%= attack_modal_id %>">
+          攻撃
+        </button>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="cycle-line">
+    <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+  </div>
+
+  <!-- 防衛方針 -->
+  <% if extended_policy %>
+    <%= link_to defense_policy_path(extended_policy), class: "cycle-node text-decoration-none" do %>
+      <div class="d-flex flex-column align-items-center">
+        <% if show_header %><div class="cycle-header">防衛方針</div><% end %>
+        <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 40px; height: 40px;">
+          <i class="bi bi-shield-check"></i>
+        </div>
+        <div class="cycle-data-name text-secondary">ID: <%= extended_policy.id %></div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="cycle-node">
+      <div class="d-flex flex-column align-items-center">
+        <% if show_header %><div class="cycle-header">防衛方針</div><% end %>
+        <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+          <i class="bi bi-shield-check"></i>
+        </div>
+        <div class="cycle-data-name text-muted"></div>
+      </div>
+    </div>
+  <% end %>
+
+  <div class="cycle-line">
+    <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+  </div>
+
+  <!-- 学習データ -->
+  <% if training_dataset %>
+    <%= link_to defense_training_dataset_path(training_dataset), class: "cycle-node text-decoration-none" do %>
+      <div class="d-flex flex-column align-items-center">
+        <% if show_header %><div class="cycle-header">学習データ</div><% end %>
+        <div class="rounded-circle d-flex align-items-center justify-content-center bg-secondary text-white" style="width: 40px; height: 40px;">
+          <i class="bi bi-database"></i>
+        </div>
+        <div class="cycle-data-name text-secondary">ID: <%= training_dataset.id %></div>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="cycle-node">
+      <div class="d-flex flex-column align-items-center">
+        <% if show_header %><div class="cycle-header">学習データ</div><% end %>
+        <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+          <i class="bi bi-database"></i>
+        </div>
+        <div class="cycle-data-name text-muted"></div>
+      </div>
+    </div>
+  <% end %>
+<% else %>
+  <!-- 攻撃結果レポートがない場合 -->
+  <div class="cycle-node">
+    <div class="d-flex flex-column align-items-center">
+      <% if show_header %><div class="cycle-header">攻撃結果レポート</div><% end %>
+      <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+        <i class="bi bi-bar-chart"></i>
+      </div>
+      <div class="cycle-data-name text-muted"></div>
+      <% if prompt_set %>
+        <button type="button" class="btn btn-warning mt-2" data-bs-toggle="modal" data-bs-target="#<%= attack_modal_id %>">
+          攻撃
+        </button>
+      <% end %>
+    </div>
+  </div>
+
+  <div class="cycle-line">
+    <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+  </div>
+
+  <div class="cycle-node">
+    <div class="d-flex flex-column align-items-center">
+      <% if show_header %><div class="cycle-header">防衛方針</div><% end %>
+      <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div class="cycle-data-name text-muted"></div>
+    </div>
+  </div>
+
+  <div class="cycle-line">
+    <div class="border-top border-secondary" style="border-width: 2px !important;"></div>
+  </div>
+
+  <div class="cycle-node">
+    <div class="d-flex flex-column align-items-center">
+      <% if show_header %><div class="cycle-header">学習データ</div><% end %>
+      <div class="rounded-circle d-flex align-items-center justify-content-center bg-light text-muted" style="width: 40px; height: 40px;">
+        <i class="bi bi-database"></i>
+      </div>
+      <div class="cycle-data-name text-muted"></div>
+    </div>
+  </div>
+<% end %>
+
+<% if prompt_set %>
+<!-- 攻撃モーダル -->
+<div class="modal fade" id="<%= attack_modal_id %>" tabindex="-1" aria-labelledby="<%= attack_modal_id %>Label" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="<%= attack_modal_id %>Label">攻撃の実行</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <%= form_with url: attack_reports_path(prompt_set_id: prompt_set.id), method: :post do |form| %>
+        <div class="modal-body">
+          <p class="text-muted">プロンプト集「<%= prompt_set.name %>」を用いて攻撃を実行します。</p>
+          <div class="mb-3">
+            <%= form.label :name, "攻撃結果レポートの名前", class: "form-label" %>
+            <%= form.text_field :name,
+                value: prompt_set.default_execution_name,
+                class: "form-control",
+                required: true %>
+          </div>
+          <div class="mb-3">
+            <%= form.label :llm, "LLM", class: "form-label" %>
+            <%= form.select :llm,
+                [[Attack::Execution.ai_model_config.name, Attack::Execution.ai_model_config.name]],
+                {},
+                class: "form-control",
+                disabled: true %>
+          </div>
+          <div class="mb-3">
+            <%= form.label :target_llm, "評価対象LLM", class: "form-label" %>
+            <%= form.select :target_llm,
+                [[Attack::Execution.target_ai_model_config.name, Attack::Execution.target_ai_model_config.name]],
+                {},
+                class: "form-control",
+                disabled: true %>
+          </div>
+          <% if prompt_set.estimated_execution_time %>
+            <p class="text-muted">予想所要時間: <%= prompt_set.estimated_execution_time %></p>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+          <%= form.submit "攻撃を開始", class: "btn btn-warning" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<% end %>

@@ -1,0 +1,11 @@
+<%# 未完了時: 拡張実行状況を表示 %>
+<%# policy: 防衛方針 %>
+
+<div class="card">
+  <div class="card-body">
+    <%= turbo_stream_from "extension_#{policy.id}" %>
+    <div id="extension_content_<%= policy.id %>">
+      <%= render "defense/policies/extension_content", policy: policy %>
+    </div>
+  </div>
+</div>

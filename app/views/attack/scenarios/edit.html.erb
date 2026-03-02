@@ -1,0 +1,11 @@
+<div class="mt-4">
+  <h2><%= Attack::Scenario.model_name.human %><%= @scenario.id %>「<%= @scenario.name.presence || "-" %>」の編集</h2>
+
+  <div class="mt-4 mb-4">
+    <%= render 'form', 
+        scenario: @scenario, 
+        url: attack_scenario_path(@scenario), 
+        submit_text: '更新',
+        cancel_path: attack_scenario_path(@scenario) %>
+  </div>
+</div>

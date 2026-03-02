@@ -1,0 +1,4 @@
+{
+    "model_name": "Rails-Dummy-API",
+    "openai_api_base": "http://localhost:3000/v1"
+}

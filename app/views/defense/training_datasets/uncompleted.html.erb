@@ -1,0 +1,55 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>未完了の学習データ生成</h2>
+  </div>
+
+  <% if @datasets.empty? %>
+    <p class="text-muted">未完了の学習データ生成はありません。</p>
+  <% else %>
+    <!-- 件数表示 -->
+    <div class="mb-3">
+      <p class="text-muted">
+        <%= @pagy.count %>件中 <%= @pagy.from || 0 %>-<%= @pagy.to || 0 %>件を表示
+      </p>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th><%= Defense::TrainingDataset.human_attribute_name(:started_at) %></th>
+            <th>防衛方針</th>
+            <th>ステータス</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @datasets.each do |dataset| %>
+            <tr>
+              <td>
+                <% if dataset.started_at %>
+                  <%= link_to l(dataset.started_at, format: :compact), defense_training_dataset_path(dataset) %>
+                <% else %>
+                  <%= link_to l(dataset.created_at, format: :compact), defense_training_dataset_path(dataset) %>
+                <% end %>
+              </td>
+              <td>
+                <% if dataset.policy %>
+                  <%= link_to dataset.policy.name, defense_policy_path(dataset.policy) %>
+                <% else %>
+                  <span class="text-muted">-</span>
+                <% end %>
+              </td>
+              <td>
+                <span class="badge bg-<%= dataset.failed? ? 'danger' : dataset.running? ? 'primary' : 'secondary' %>">
+                  <%= dataset.status_i18n %>
+                </span>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+  <% end %>
+</div>

@@ -1,0 +1,64 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>未完了のプロンプト集生成</h2>
+  </div>
+
+  <% if @prompt_sets.empty? %>
+    <p class="text-muted">未完了のプロンプト集生成はありません。</p>
+  <% else %>
+    <!-- 件数表示 -->
+    <div class="mb-3">
+      <p class="text-muted">
+        <%= @pagy.count %>件中 <%= @pagy.from %>-<%= @pagy.to %>件を表示
+      </p>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th><%= Attack::PromptSet.human_attribute_name(:started_at) %></th>
+            <th>シナリオ</th>
+            <th>ステータス</th>
+            <th>実行時間</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @prompt_sets.each do |prompt_set| %>
+            <tr>
+              <td>
+                <% if prompt_set.started_at %>
+                  <%= link_to l(prompt_set.started_at, format: :compact), attack_prompt_set_path(prompt_set) %>
+                <% else %>
+                  <%= link_to l(prompt_set.created_at, format: :compact), attack_prompt_set_path(prompt_set) %>
+                <% end %>
+              </td>
+              <td>
+                <% if prompt_set.scenario %>
+                  <%= link_to prompt_set.scenario.name, attack_scenario_path(prompt_set.scenario) %>
+                <% else %>
+                  <span class="text-muted">-</span>
+                <% end %>
+              </td>
+              <td>
+                <span class="badge bg-<%= prompt_set.failed? ? 'danger' : prompt_set.running? ? 'primary' : 'secondary' %>">
+                  <%= prompt_set.status_i18n %>
+                </span>
+              </td>
+              <td>
+                <% if prompt_set.execution_time %>
+                  <%= format_duration(prompt_set.execution_time) %>
+                <% else %>
+                  <span class="text-muted">-</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+  <% end %>
+</div>
+

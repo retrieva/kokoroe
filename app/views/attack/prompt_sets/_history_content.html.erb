@@ -1,0 +1,11 @@
+<%# 未完了時: 生成状況を表示 %>
+<%# prompt_set: プロンプト集 %>
+
+<div class="card">
+  <div class="card-body">
+    <%= turbo_stream_from "progress_#{prompt_set.id}" %>
+    <div id="generation_content_<%= prompt_set.id %>">
+      <%= render "attack/prompt_sets/generation_content", prompt_set: prompt_set %>
+    </div>
+  </div>
+</div>

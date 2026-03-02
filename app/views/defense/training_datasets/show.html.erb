@@ -1,0 +1,22 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="me-3"><%= Defense::TrainingDataset.model_name.human %><%= @dataset.id %>「<%= @dataset.name.presence || "-" %>」</h2>
+    <div class="flex-shrink-0 d-flex flex-nowrap gap-2">
+      <%= link_to "削除", defense_training_dataset_path(@dataset, redirect_to: "parent"),
+          data: { turbo_method: :delete, turbo_confirm: "学習データ「#{@dataset.name}」を削除します。よろしいですか？" },
+          class: "btn btn-outline-danger" %>
+      <%= link_to "一覧", defense_training_datasets_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <%= render "improvement_cycle", dataset: @dataset %>
+
+  <%= turbo_stream_from "training_dataset_#{@dataset.id}" %>
+  <div id="training_dataset_content_<%= @dataset.id %>">
+    <% if @dataset.completed? %>
+      <%= render "data_content", dataset: @dataset %>
+    <% else %>
+      <%= render "history_content", dataset: @dataset %>
+    <% end %>
+  </div>
+</div>

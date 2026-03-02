@@ -1,0 +1,11 @@
+<div class="mt-4">
+  <h2>新しい攻撃シナリオ</h2>
+
+  <div class="mt-4 mb-4">
+    <%= render 'form',
+        scenario: @scenario,
+        url: attack_scenarios_path,
+        submit_text: '作成',
+        cancel_path: attack_scenarios_path %>
+  </div>
+</div>

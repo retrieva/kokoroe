@@ -1,0 +1,25 @@
+<div class="card mb-4">
+  <div class="card-body">
+    <h6 class="card-title mb-2 fw-bold">基本情報</h6>
+    <div class="row mb-2">
+      <div class="col-md-3">
+        名前:
+      </div>
+      <div class="col-md-9">
+        <%= execution_history.name %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3">
+        作成日時:
+      </div>
+      <div class="col-md-9">
+        <%= l(execution_history.completed_at, format: :compact) %>
+        <% if execution_history.execution_time %>
+          <span class="ms-3 text-muted">⏱️ <%= format_duration(execution_history.execution_time) %></span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,56 @@
+<% if detail_form.object.marked_for_destruction? %>
+  <%# 削除予定の詳細は画面に表示せず、hiddenフィールドのみ出力 %>
+  <%= detail_form.hidden_field :id %>
+  <%= detail_form.hidden_field :_destroy, value: '1' %>
+<% else %>
+  <%# 通常の詳細フィールド表示 %>
+  <div class="detail-fields border rounded p-3 mb-3" data-nested-form-target="detail">
+    <div class="mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <%= detail_form.label :category, class: "form-label mb-0" do %>カテゴリ<% unless detail_form.object.in_last_blank_category? %><span class="text-danger ms-1">*</span><% end %><% end %>
+        <small class="text-secondary" style="opacity: 0.7;">💡 扱う脆弱性の名前を指定します（例：誹謗中傷）</small>
+      </div>
+      <%= detail_form.text_field :category, class: "form-control #{'is-invalid' if detail_form.object.errors[:category].any?}", data: { action: "compositionstart->nested-form#handleCompositionStart compositionend->nested-form#handleCompositionEnd input->nested-form#checkDetailFields" } %>
+      <% if detail_form.object.errors[:category].any? %>
+        <div class="invalid-feedback d-block">
+          <%= detail_form.object.errors.full_messages_for(:category).join(", ") %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <%= detail_form.label :description, class: "form-label mb-0" do %>説明<% unless detail_form.object.in_last_blank_category? %><span class="text-danger ms-1">*</span><% end %><% end %>
+        <small class="text-secondary" style="opacity: 0.7;">💡 脆弱性の詳細な説明を記載します（例：特定の個人や団体に対する根拠のない悪口や中傷を行う行為）</small>
+      </div>
+      <%= detail_form.text_area :description, class: "form-control #{'is-invalid' if detail_form.object.errors[:description].any?}", rows: 2, data: { action: "compositionstart->nested-form#handleCompositionStart compositionend->nested-form#handleCompositionEnd input->nested-form#checkDetailFields" } %>
+      <% if detail_form.object.errors[:description].any? %>
+        <div class="invalid-feedback d-block">
+          <%= detail_form.object.errors.full_messages_for(:description).join(", ") %>
+        </div>
+      <% end %>
+    </div>
+
+    <div class="mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <%= detail_form.label :severity, class: "form-label mb-0" do %>重要度<% unless detail_form.object.in_last_blank_category? %><span class="text-danger ms-1">*</span><% end %><% end %>
+        <small class="text-secondary" style="opacity: 0.7;">💡 値が大きいほど多くの攻撃プロンプトが生成されます</small>
+      </div>
+      <%= detail_form.select :severity, (1..5), {}, class: "form-control" %>
+    </div>
+
+    <div class="mb-3">
+      <div class="d-flex justify-content-between align-items-center mb-1">
+        <label class="form-label mb-0">例</label>
+        <small class="text-secondary" style="opacity: 0.7;">💡 具体的な攻撃プロンプトの例を記載すると、より適切なプロンプト生成に役立ちます</small>
+      </div>
+      <div class="examples-container" data-nested-form-target="examplesContainer" data-detail-index="<%= detail_form.index %>" id="examples-container-<%= detail_form.index %>">
+        <%= detail_form.fields_for :examples do |example_form| %>
+          <div class="example-fields mb-2" data-nested-form-target="example">
+            <%= example_form.text_field :text, class: "form-control", placeholder: "例を入力", data: { action: "compositionstart->nested-form#handleCompositionStart compositionend->nested-form#handleCompositionEnd input->nested-form#checkExampleFields" } %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>

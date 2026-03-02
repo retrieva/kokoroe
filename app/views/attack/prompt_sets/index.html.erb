@@ -1,0 +1,109 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>プロンプト集一覧</h2>
+    <div>
+      <%= link_to "HOME", root_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <% if Attack::PromptSet.count == 0 %>
+    <div class="alert alert-info">
+      プロンプト集がまだありません。<%= link_to "攻撃シナリオ", attack_scenarios_path, class: "alert-link" %>を作成すると、攻撃シナリオをもとに生成することができます。
+    </div>
+  <% else %>
+    <!-- 絞り込みフォーム -->
+    <div class="mb-3">
+      <%= form_with url: attack_prompt_sets_path, method: :get, local: true do |f| %>
+        <div class="row g-3 align-items-end">
+          <div class="col-md-4">
+            <%= f.label :scenario_id, "シナリオ", class: "form-label" %>
+            <%= f.select :scenario_id,
+                         options_from_collection_for_select(@scenarios, :id, :name, params[:scenario_id]),
+                         { include_blank: "すべて" },
+                         { class: "form-select" } %>
+          </div>
+          <div class="col-md-4">
+            <%= f.submit "絞り込む", class: "btn btn-primary" %>
+            <%= link_to "クリア", attack_prompt_sets_path, class: "btn btn-secondary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- 件数表示 -->
+    <div class="mb-3">
+      <p class="text-muted">
+        <%= @pagy.count %>件中 <%= @pagy.from %>-<%= @pagy.to %>件を表示
+      </p>
+    </div>
+
+    <% if @prompt_sets.empty? %>
+      <div class="alert alert-info">
+        条件に一致するプロンプト集が見つかりませんでした。
+      </div>
+    <% else %>
+      <div class="table-responsive">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>名前</th>
+              <th>シナリオ</th>
+              <th></th>
+              <th>プロンプト数</th>
+              <th>作成日時</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @prompt_sets.each do |prompt_set| %>
+              <tr>
+                <td>
+                  <%= link_to prompt_set.name, attack_prompt_set_path(prompt_set) %>
+                </td>
+                <td>
+                  <% if prompt_set.scenario %>
+                    <%= prompt_set.scenario.name %>
+                  <% else %>
+                    <span class="text-muted">-</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% unless prompt_set.completed? %>
+                    <span class="badge bg-<%= prompt_set.failed? ? 'danger' : prompt_set.running? ? 'primary' : 'secondary' %>">
+                      <%= prompt_set.status_i18n %>
+                    </span>
+                  <% end %>
+                </td>
+                <td>
+                  <%= prompt_set.prompts.count %>件
+                </td>
+                <td>
+                  <%= l(prompt_set.created_at, format: :compact) %>
+                  <%= new_badge(prompt_set.updated_at) %>
+                </td>
+                <td>
+                  <% if prompt_set.completed? %>
+                    <%= link_to "ダウンロード", download_attack_prompt_set_path(prompt_set),
+                        class: "btn btn-outline-success btn-sm", data: { turbo: false } %>
+                  <% else %>
+                    <span class="btn btn-outline-success btn-sm" style="visibility: hidden;">ダウンロード</span>
+                  <% end %>
+                  <% if prompt_set.deletable? %>
+                    <%= link_to "削除", attack_prompt_set_path(prompt_set),
+                        data: { turbo_method: :delete, turbo_confirm: "プロンプト集「#{prompt_set.name}」を削除します。よろしいですか？" },
+                        class: "btn btn-outline-danger btn-sm" %>
+                  <% else %>
+                    <button type="button" class="btn btn-outline-danger btn-sm"
+                        onclick="alert('<%= prompt_set.undeletable_reason %>')">削除</button>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      </div>
+
+      <%== pagy_nav(@pagy) if @pagy.pages > 1 %>
+    <% end %>
+  <% end %>
+</div>

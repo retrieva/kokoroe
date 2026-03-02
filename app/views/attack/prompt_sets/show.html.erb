@@ -1,0 +1,27 @@
+<div class="mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="me-3"><%= Attack::PromptSet.model_name.human %><%= @prompt_set.id %>「<%= @prompt_set.name.presence || "-" %>」</h2>
+    <div class="flex-shrink-0 d-flex flex-nowrap gap-2">
+      <% if @prompt_set.completed? %>
+        <%= link_to "ダウンロード", download_attack_prompt_set_path(@prompt_set), class: "btn btn-outline-success", data: { turbo: false } %>
+      <% end %>
+      <%= link_to "削除", attack_prompt_set_path(@prompt_set, redirect_to: "parent"),
+          data: { turbo_method: :delete, turbo_confirm: "プロンプト集「#{@prompt_set.name}」を削除します。よろしいですか？" },
+          class: "btn btn-outline-danger" %>
+      <%= link_to "一覧", attack_prompt_sets_path, class: "btn btn-outline-secondary" %>
+    </div>
+  </div>
+
+  <%= turbo_stream_from "prompt_set_#{@prompt_set.id}" %>
+  <div id="prompt_set_improvement_cycle_<%= @prompt_set.id %>">
+    <%= render "improvement_cycle", prompt_set: @prompt_set %>
+  </div>
+
+  <div id="prompt_set_content_<%= @prompt_set.id %>">
+    <% if @prompt_set.completed? %>
+      <%= render "data_content", prompt_set: @prompt_set %>
+    <% else %>
+      <%= render "history_content", prompt_set: @prompt_set %>
+    <% end %>
+  </div>
+</div>

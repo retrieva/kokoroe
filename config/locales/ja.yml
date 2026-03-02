@@ -1,0 +1,94 @@
+ja:
+  time:
+    formats:
+      default: "%Y年%m月%d日 %H:%M"
+      short: "%m/%d %H:%M"
+      long: "%Y年%m月%d日 %H時%M分"
+      compact: "%Y/%m/%d %H:%M"
+  date:
+    formats:
+      default: "%Y年%m月%d日"
+      short: "%m/%d"
+      long: "%Y年%m月%d日"
+  activerecord:
+    models:
+      attack/scenario: "攻撃シナリオ"
+      attack/detail: "攻撃定義"
+      attack/prompt_set: "プロンプト集"
+      attack/execution: "攻撃結果レポート"
+      attack/scenario/details: ""
+      defense/policy: "防衛方針"
+      defense/training_dataset: "学習データ"
+    attributes:
+      attack/scenario:
+        name: "シナリオ名"
+        details: "攻撃定義"
+        prompt_sets: "プロンプト集"
+        created_at: "作成日時"
+        updated_at: "更新日時"
+      attack/detail:
+        category: "カテゴリ"
+        description: "説明"
+        severity: "深刻度"
+        created_at: "作成日時"
+        updated_at: "更新日時"
+      attack/scenario/details:
+        category: "カテゴリ"
+        description: "説明"
+        severity: "深刻度"
+      attack/prompt_set:
+        started_at: "実行開始日時"
+        completed_at: "実行完了日時"
+        failed_at: "実行失敗日時"
+      attack/execution:
+        started_at: "実行開始日時"
+        completed_at: "実行完了日時"
+        failed_at: "実行失敗日時"
+      defense/policy:
+        contents: "防衛方針"
+        extended_policies: "拡張された防衛方針"
+        training_datasets: "学習データ"
+        created_at: "作成日時"
+        updated_at: "更新日時"
+        started_at: "実行開始日時"
+        completed_at: "実行完了日時"
+        failed_at: "実行失敗日時"
+      defense/training_dataset:
+        started_at: "実行開始日時"
+        completed_at: "実行完了日時"
+        failed_at: "実行失敗日時"
+    errors:
+      messages:
+        restrict_dependent_destroy:
+          has_many: "%{record}があるため削除できません。"
+      models:
+        attack/detail:
+          attributes:
+            category:
+              blank: "を入力してください"
+              taken: "が重複しています"
+            description:
+              blank: "を入力してください"
+            severity:
+              blank: "を選択してください"
+              inclusion: "は1から5の範囲で入力してください"
+        attack/scenario:
+          attributes:
+            name:
+              blank: "を入力してください"
+            details:
+              invalid: "に不備があります"
+        defense/policy:
+          attributes:
+            contents:
+              blank: "を入力してください。"
+  enums:
+    status:
+      pending: "待機中"
+      running: "実行中"
+      completed: "完了"
+      failed: "実行失敗"
+  helpers:
+    confirm:
+      delete:
+        defense/policy: "本当に削除しますか？防衛方針を削除すると関連する拡張履歴も削除されます。"

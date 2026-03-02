@@ -1,0 +1,10 @@
+<% if scenario.errors.any? %>
+  <div class="alert alert-danger">
+    <h6><%= scenario.errors.count %>件のエラーがあります:</h6>
+    <ul>
+      <% scenario.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>
